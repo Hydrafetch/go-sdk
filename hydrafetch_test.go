@@ -136,6 +136,26 @@ func TestGETEndpointsUseQueryParameters(t *testing.T) {
 	}
 }
 
+func TestStyleguideReadsADomainOrOnePage(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{}}`)
+	})
+	if _, err := c.Styleguide(context.Background(), "stripe.com"); err != nil {
+		t.Fatalf("Styleguide: %v", err)
+	}
+	fresh := 0
+	if _, err := c.Styleguide(context.Background(), "https://stripe.com/pricing", StyleguideOptions{MaxAge: &fresh}); err != nil {
+		t.Fatalf("Styleguide: %v", err)
+	}
+	if q := cap.requests[0].URL.Query(); q.Get("domain") != "stripe.com" {
+		t.Errorf("domain query = %v", q)
+	}
+	q := cap.requests[1].URL.Query()
+	if q.Get("url") != "https://stripe.com/pricing" || q.Get("maxAge") != "0" || q.Has("domain") {
+		t.Errorf("page query = %v", q)
+	}
+}
+
 func TestErrorCarriesCodeStatusAndRequestID(t *testing.T) {
 	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 401, `{"success":false,"error":{"code":"UNAUTHORIZED","message":"Invalid API key"},"meta":{"requestId":"abc"}}`)

@@ -287,9 +287,21 @@ func (c *Client) Logo(ctx context.Context, domain string, opts *LogoOptions) (Br
 	return out, nil
 }
 
-func (c *Client) Styleguide(ctx context.Context, domain string) (BrandResult, error) {
+func (c *Client) Styleguide(ctx context.Context, domainOrURL string, opts ...StyleguideOptions) (BrandResult, error) {
+	q := url.Values{}
+	lower := strings.ToLower(domainOrURL)
+	if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") {
+		q.Set("url", domainOrURL)
+	} else {
+		q.Set("domain", domainOrURL)
+	}
+	for _, o := range opts {
+		if o.MaxAge != nil {
+			q.Set("maxAge", strconv.Itoa(*o.MaxAge))
+		}
+	}
 	var out BrandResult
-	if err := c.do(ctx, http.MethodGet, "/v1/web/styleguide", nil, url.Values{"domain": {domain}}, &out); err != nil {
+	if err := c.do(ctx, http.MethodGet, "/v1/web/styleguide", nil, q, &out); err != nil {
 		return nil, err
 	}
 	return out, nil

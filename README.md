@@ -158,6 +158,7 @@ for _, r := range res.Results {
 hf.Brand(ctx, "stripe.com")                                              // logos, colours, fonts, socials
 hf.Logo(ctx, "stripe.com", &hydrafetch.LogoOptions{Theme: "dark"})       // one asset
 hf.Styleguide(ctx, "stripe.com")                                         // computed design system
+hf.Styleguide(ctx, "https://stripe.com/pricing")                         // one page
 ```
 
 For logos in a browser use [`@hydrafetch/client-sdk`](https://github.com/Hydrafetch/client-sdk) with a publishable key. Those bill against logo pulls rather than credits.
@@ -220,7 +221,7 @@ hf, err := hydrafetch.New("hf_...",
 | `Extract(ctx, urls, *ExtractOptions)` | `*ExtractResult` | 5 per URL |
 | `Brand(ctx, domain)` | `BrandResult` | 5 |
 | `Logo(ctx, domain, *LogoOptions)` | `BrandResult` | 1 |
-| `Styleguide(ctx, domain)` | `BrandResult` | 10 |
+| `Styleguide(ctx, domainOrURL, opts...)` | `BrandResult` | 10 |
 | `Screenshot(ctx, url, *ScreenshotOptions)` | `*ScreenshotResult` | 5 |
 | `Images(ctx, url)` | `*ImagesResult` | 1 |
 | `Crawl(ctx, url, *CrawlOptions, *WaitOptions)` | `*Job` | 1 per page |

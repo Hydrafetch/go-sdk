@@ -172,6 +172,10 @@ type LogoOptions struct {
 	Type  string
 }
 
+type StyleguideOptions struct {
+	MaxAge *int
+}
+
 type BrandResult map[string]any
 
 type ScreenshotOptions struct {
