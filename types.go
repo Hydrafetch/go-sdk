@@ -21,6 +21,11 @@ type Usage struct {
 
 type Metadata map[string]any
 
+type Location struct {
+	Country   string   `json:"country,omitempty"`
+	Languages []string `json:"languages,omitempty"`
+}
+
 type ScrapeOptions struct {
 	Formats            []Format          `json:"formats,omitempty"`
 	MaxAge             int               `json:"maxAge,omitempty"`
@@ -35,6 +40,7 @@ type ScrapeOptions struct {
 	IncludeLinks       bool              `json:"includeLinks,omitempty"`
 	WaitFor            int               `json:"waitFor,omitempty"`
 	Timeout            int               `json:"timeout,omitempty"`
+	Location           *Location         `json:"location,omitempty"`
 	Headers            map[string]string `json:"headers,omitempty"`
 }
 
@@ -100,13 +106,16 @@ type SearchResult struct {
 }
 
 type ExtractOptions struct {
-	Schema          map[string]any `json:"schema,omitempty"`
-	Prompt          string         `json:"prompt,omitempty"`
-	PreferStructure bool           `json:"preferStructure,omitempty"`
-	EnableWebSearch bool           `json:"enableWebSearch,omitempty"`
-	ShowSources     bool           `json:"showSources,omitempty"`
-	ShowConfidence  bool           `json:"showConfidence,omitempty"`
-	MergeEntities   bool           `json:"mergeEntities,omitempty"`
+	Schema          map[string]any    `json:"schema,omitempty"`
+	Prompt          string            `json:"prompt,omitempty"`
+	PreferStructure bool              `json:"preferStructure,omitempty"`
+	EnableWebSearch bool              `json:"enableWebSearch,omitempty"`
+	ShowSources     bool              `json:"showSources,omitempty"`
+	ShowConfidence  bool              `json:"showConfidence,omitempty"`
+	MergeEntities   bool              `json:"mergeEntities,omitempty"`
+	MaxAge          int               `json:"maxAge,omitempty"`
+	Location        *Location         `json:"location,omitempty"`
+	Headers         map[string]string `json:"headers,omitempty"`
 }
 
 type ExtractItem struct {

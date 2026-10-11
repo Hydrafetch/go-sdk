@@ -111,6 +111,29 @@ func TestOptionsRideAlongsideTheURL(t *testing.T) {
 	}
 }
 
+func TestExtractSendsLocationAndHeaders(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{"results":[]}}`)
+	})
+	_, err := c.Extract(context.Background(), []string{"https://shop.example/s?q=ghee"}, &ExtractOptions{
+		Prompt:   "products and prices",
+		Location: &Location{Country: "in", Languages: []string{"en-IN"}},
+		Headers:  map[string]string{"Cookie": "store_id=42"},
+	})
+	if err != nil {
+		t.Fatalf("Extract: %v", err)
+	}
+	body := cap.bodies[0]
+	loc, ok := body["location"].(map[string]any)
+	if !ok || loc["country"] != "in" {
+		t.Errorf("location = %+v", body["location"])
+	}
+	headers, ok := body["headers"].(map[string]any)
+	if !ok || headers["Cookie"] != "store_id=42" {
+		t.Errorf("headers = %+v", body["headers"])
+	}
+}
+
 func TestZeroValuedOptionsAreOmitted(t *testing.T) {
 	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, `{"success":true,"data":{}}`)

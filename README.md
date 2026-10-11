@@ -93,6 +93,16 @@ for _, item := range out.Results {
 
 Set `Prompt` instead of, or alongside, `Schema` to describe the fields in plain language.
 
+Sites that price or stock by delivery area serve a different page for each area. Set `Location` to fetch as if from a country and language, and `Headers` to send the cookie that picks the store or area, the same options `Scrape` takes.
+
+```go
+out, err := hf.Extract(ctx, []string{"https://shop.example/search?q=ghee"}, &hydrafetch.ExtractOptions{
+	Prompt:   "every product with its size and price",
+	Location: &hydrafetch.Location{Country: "in"},
+	Headers:  map[string]string{"Cookie": "store_id=42"},
+})
+```
+
 ## Discovery and bulk work
 
 `Map` lists a site's URLs for one credit without fetching any page.
