@@ -42,7 +42,7 @@ func main() {
 }
 ```
 
-Create a key at [app.hydrafetch.com](https://app.hydrafetch.com). Passing an empty string to `New` falls back to `HYDRAFETCH_API_KEY`.
+Copy your key from [app.hydrafetch.com](https://app.hydrafetch.com). Passing an empty string to `New` falls back to `HYDRAFETCH_API_KEY`.
 
 Every method takes a `context.Context` first, so deadlines and cancellation propagate as usual. Options structs are pointers and may be `nil`.
 
