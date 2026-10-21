@@ -217,3 +217,24 @@ type ImagesResult struct {
 	FinalURL string      `json:"finalUrl,omitempty"`
 	Images   []PageImage `json:"images"`
 }
+
+type Rating string
+
+const (
+	RatingGood Rating = "good"
+	RatingBad  Rating = "bad"
+)
+
+type RateResultInput struct {
+	RequestID string   `json:"requestId,omitempty"`
+	URL       string   `json:"url,omitempty"`
+	Rating    Rating   `json:"rating"`
+	Reasons   []string `json:"reasons,omitempty"`
+	Note      string   `json:"note,omitempty"`
+}
+
+type RateResultResponse struct {
+	ID        string `json:"id"`
+	RequestID string `json:"requestId"`
+	Rating    Rating `json:"rating"`
+}

@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
@@ -22,10 +23,11 @@ const (
 )
 
 type Client struct {
-	apiKey     string
-	baseURL    string
-	httpClient *http.Client
-	maxRetries int
+	apiKey        string
+	baseURL       string
+	httpClient    *http.Client
+	maxRetries    int
+	lastRequestID atomic.Value
 }
 
 type Option func(*Client)
@@ -129,6 +131,9 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 			continue
 		}
 
+		if id := res.Header.Get("X-Request-Id"); id != "" {
+			c.lastRequestID.Store(id)
+		}
 		raw, readErr := io.ReadAll(res.Body)
 		res.Body.Close()
 		if readErr != nil {
@@ -175,6 +180,22 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 		return nil
 	}
 	return lastErr
+}
+
+func (c *Client) LastRequestID() string {
+	id, _ := c.lastRequestID.Load().(string)
+	return id
+}
+
+func (c *Client) RateResult(ctx context.Context, in RateResultInput) (*RateResultResponse, error) {
+	if in.RequestID == "" && in.URL == "" {
+		return nil, &Error{Code: "VALIDATION_ERROR", Status: 400, Message: "pass RequestID or URL to say which result you are rating"}
+	}
+	var out RateResultResponse
+	if err := c.do(ctx, http.MethodPost, "/v1/web/feedback", in, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func sleep(ctx context.Context, attempt int) {

@@ -365,3 +365,48 @@ func min(a, b int) int {
 	}
 	return b
 }
+
+func TestRateResultPostsTheRatingForTheLastRequest(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v1/web/feedback" {
+			writeJSON(w, 200, `{"success":true,"data":{"id":"f1","requestId":"r1","rating":"bad"}}`)
+			return
+		}
+		w.Header().Set("X-Request-Id", "r1")
+		writeJSON(w, 200, `{"success":true,"data":{"markdown":"# hi"}}`)
+	})
+	if _, err := c.Scrape(context.Background(), "https://example.com", nil); err != nil {
+		t.Fatalf("Scrape: %v", err)
+	}
+	if c.LastRequestID() != "r1" {
+		t.Fatalf("LastRequestID = %q, want r1", c.LastRequestID())
+	}
+	out, err := c.RateResult(context.Background(), RateResultInput{
+		RequestID: c.LastRequestID(),
+		Rating:    RatingBad,
+		Reasons:   []string{"missing_content"},
+		Note:      "no prices",
+	})
+	if err != nil {
+		t.Fatalf("RateResult: %v", err)
+	}
+	if out.ID != "f1" || out.Rating != RatingBad {
+		t.Errorf("unexpected response %+v", out)
+	}
+	body := cap.bodies[1]
+	if body["requestId"] != "r1" || body["rating"] != "bad" || body["note"] != "no prices" {
+		t.Errorf("unexpected body %v", body)
+	}
+	if _, ok := body["url"]; ok {
+		t.Errorf("url should be omitted, got %v", body["url"])
+	}
+}
+
+func TestRateResultNeedsATarget(t *testing.T) {
+	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{}}`)
+	})
+	if _, err := c.RateResult(context.Background(), RateResultInput{Rating: RatingGood}); err == nil {
+		t.Fatal("expected an error without RequestID or URL")
+	}
+}

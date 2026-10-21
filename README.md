@@ -174,6 +174,27 @@ hf.Styleguide(ctx, "https://stripe.com/pricing")                         // one 
 
 For logos in a browser use [`@hydrafetch/client-sdk`](https://github.com/Hydrafetch/client-sdk) with a publishable key. Those bill against logo pulls rather than credits.
 
+## Rating results
+
+Tell us when a result was wrong, so it gets looked at. It is free, and rating the same request again replaces the earlier rating.
+
+```go
+_, err := hf.Scrape(ctx, "https://stripe.com/pricing", nil)
+if err != nil {
+	log.Fatal(err)
+}
+_, err = hf.RateResult(ctx, hydrafetch.RateResultInput{
+	RequestID: hf.LastRequestID(),
+	Rating:    hydrafetch.RatingBad,
+	Reasons:   []string{"missing_content"},
+	Note:      "The enterprise tier is missing",
+})
+
+_, err = hf.RateResult(ctx, hydrafetch.RateResultInput{URL: "https://stripe.com/pricing", Rating: hydrafetch.RatingGood})
+```
+
+Reasons are `missing_content`, `wrong_content`, `blocked`, `slow`, `formatting` and `other`.
+
 ## Error handling
 
 All failures are `*hydrafetch.Error`. Reach it with `errors.As`.
@@ -239,6 +260,7 @@ hf, err := hydrafetch.New("hf_...",
 | `Batch(ctx, urls, *BatchOptions, *WaitOptions)` | `*Job` | 1 per page |
 | `StartCrawl`, `StartBatch` | `string` | 1 per page |
 | `CrawlStatus(ctx, id)`, `BatchStatus(ctx, id)` | `*Job` | free |
+| `RateResult(ctx, in)` | `*RateResultResponse` | free |
 
 Failed requests are not billed. Pricing does not vary with page difficulty, so there is no render, stealth or proxy option to set.
 
