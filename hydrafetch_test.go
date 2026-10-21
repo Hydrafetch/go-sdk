@@ -138,11 +138,26 @@ func TestZeroValuedOptionsAreOmitted(t *testing.T) {
 	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, `{"success":true,"data":{}}`)
 	})
-	if _, err := c.Scrape(context.Background(), "https://example.com", &ScrapeOptions{BlockAds: true}); err != nil {
+	if _, err := c.Scrape(context.Background(), "https://example.com", &ScrapeOptions{BlockAds: Bool(true)}); err != nil {
 		t.Fatalf("Scrape: %v", err)
 	}
 	if _, present := cap.bodies[0]["timeout"]; present {
 		t.Error("unset timeout must not be serialised")
+	}
+}
+
+func TestADefaultTrueOptionCanBeTurnedOff(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{}}`)
+	})
+	if _, err := c.Scrape(context.Background(), "https://example.com", &ScrapeOptions{OnlyMainContent: Bool(false)}); err != nil {
+		t.Fatalf("Scrape: %v", err)
+	}
+	if v, present := cap.bodies[0]["onlyMainContent"]; !present || v != false {
+		t.Errorf("onlyMainContent = %v, present %v", v, present)
+	}
+	if _, present := cap.bodies[0]["blockAds"]; present {
+		t.Error("an unset default-true option must not be serialised")
 	}
 }
 

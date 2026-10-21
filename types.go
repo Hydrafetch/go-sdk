@@ -32,12 +32,12 @@ type ScrapeOptions struct {
 	CacheOnly          bool              `json:"cacheOnly,omitempty"`
 	StoreInCache       *bool             `json:"storeInCache,omitempty"`
 	PreferStructure    bool              `json:"preferStructure,omitempty"`
-	OnlyMainContent    bool              `json:"onlyMainContent,omitempty"`
+	OnlyMainContent    *bool             `json:"onlyMainContent,omitempty"`
 	IncludeTags        []string          `json:"includeTags,omitempty"`
 	ExcludeTags        []string          `json:"excludeTags,omitempty"`
-	RemoveBase64Images bool              `json:"removeBase64Images,omitempty"`
-	BlockAds           bool              `json:"blockAds,omitempty"`
-	IncludeLinks       bool              `json:"includeLinks,omitempty"`
+	RemoveBase64Images *bool             `json:"removeBase64Images,omitempty"`
+	BlockAds           *bool             `json:"blockAds,omitempty"`
+	IncludeLinks       *bool             `json:"includeLinks,omitempty"`
 	WaitFor            int               `json:"waitFor,omitempty"`
 	Timeout            int               `json:"timeout,omitempty"`
 	Location           *Location         `json:"location,omitempty"`

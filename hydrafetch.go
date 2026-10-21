@@ -46,6 +46,10 @@ func WithMaxRetries(n int) Option {
 	return func(c *Client) { c.maxRetries = n }
 }
 
+func Bool(v bool) *bool {
+	return &v
+}
+
 func New(apiKey string, opts ...Option) (*Client, error) {
 	if apiKey == "" {
 		apiKey = os.Getenv("HYDRAFETCH_API_KEY")

@@ -51,12 +51,13 @@ Every method takes a `context.Context` first, so deadlines and cancellation prop
 ```go
 page, err := hf.Scrape(ctx, "https://example.com/article", &hydrafetch.ScrapeOptions{
 	Formats:         []hydrafetch.Format{hydrafetch.FormatMarkdown, hydrafetch.FormatLinks},
-	OnlyMainContent: true,
 	PreferStructure: true,
-	BlockAds:        true,
+	BlockAds:        hydrafetch.Bool(true),
 	MaxAge:          3_600_000,
 })
 ```
+
+Options that default to on (`OnlyMainContent`, `BlockAds`, `RemoveBase64Images`, `IncludeLinks`, `StoreInCache`) are `*bool`, so leaving one unset keeps the default and `hydrafetch.Bool(false)` turns it off.
 
 | Format | Field | Contains |
 | --- | --- | --- |
