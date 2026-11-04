@@ -253,6 +253,37 @@ func (c *Client) Map(ctx context.Context, rawURL string, opts *MapOptions) (*Map
 	return &out, nil
 }
 
+// SearchJobs finds open jobs by the words in the job title, newest first.
+func (c *Client) SearchJobs(ctx context.Context, query string, opts *SearchJobsOptions) ([]OpenJob, error) {
+	body := map[string]any{"query": query}
+	if opts != nil {
+		encoded, _ := json.Marshal(opts)
+		var fields map[string]any
+		_ = json.Unmarshal(encoded, &fields)
+		for k, v := range fields {
+			body[k] = v
+		}
+	}
+	var out []OpenJob
+	if err := c.do(ctx, http.MethodPost, "/v1/web/index/jobs/search", body, nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HiringChanges reports what each company opened and closed since a time.
+func (c *Client) HiringChanges(ctx context.Context, domains []string, since time.Time, opts *HiringChangesOptions) ([]CompanyHiringChanges, error) {
+	body := map[string]any{"domains": domains, "since": since.UTC().Format(time.RFC3339)}
+	if opts != nil && opts.IncludeDescriptions {
+		body["includeDescriptions"] = true
+	}
+	var out []CompanyHiringChanges
+	if err := c.do(ctx, http.MethodPost, "/v1/web/index/jobs/changes", body, nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *Client) Search(ctx context.Context, query string, opts *SearchOptions) (*SearchResult, error) {
 	body := map[string]any{"query": query}
 	if opts != nil {

@@ -238,3 +238,75 @@ type RateResultResponse struct {
 	RequestID string `json:"requestId"`
 	Rating    Rating `json:"rating"`
 }
+
+// SearchJobsOptions narrows a jobs search. Each 10 jobs returned cost 1 credit.
+type SearchJobsOptions struct {
+	Location            string `json:"location,omitempty"`
+	RemoteOnly          bool   `json:"remoteOnly,omitempty"`
+	PostedWithinDays    int    `json:"postedWithinDays,omitempty"`
+	Limit               int    `json:"limit,omitempty"`
+	IncludeDescriptions bool   `json:"includeDescriptions,omitempty"`
+}
+
+type JobPay struct {
+	Min      *float64 `json:"min"`
+	Max      *float64 `json:"max"`
+	Currency *string  `json:"currency"`
+	Interval *string  `json:"interval"`
+}
+
+// OpenJob is one open job from a company career site or hiring platform.
+type OpenJob struct {
+	Title          string  `json:"title"`
+	Company        *string `json:"company"`
+	Domain         string  `json:"domain"`
+	Board          string  `json:"board"`
+	Department     *string `json:"department"`
+	Location       *string `json:"location"`
+	Remote         *bool   `json:"remote"`
+	EmploymentType *string `json:"employmentType"`
+	PostedAt       *string `json:"postedAt"`
+	FirstSeenAt    string  `json:"firstSeenAt"`
+	URL            *string `json:"url"`
+	ApplyURL       *string `json:"applyUrl"`
+	Pay            *JobPay `json:"pay"`
+	Description    *string `json:"description,omitempty"`
+}
+
+type HiringChangesOptions struct {
+	IncludeDescriptions bool `json:"includeDescriptions,omitempty"`
+}
+
+type HiringCounts struct {
+	Open   int `json:"open"`
+	Opened int `json:"opened"`
+	Closed int `json:"closed"`
+}
+
+type HiringChangePosting struct {
+	Title       string  `json:"title"`
+	Department  *string `json:"department"`
+	Location    *string `json:"location"`
+	Seniority   string  `json:"seniority"`
+	Board       string  `json:"board"`
+	URL         *string `json:"url"`
+	PostedAt    *string `json:"postedAt"`
+	FirstSeenAt string  `json:"firstSeenAt"`
+	ClosedAt    *string `json:"closedAt"`
+	Description *string `json:"description,omitempty"`
+}
+
+// CompanyHiringChanges is what changed in one company's hiring since a date.
+type CompanyHiringChanges struct {
+	Domain       string                  `json:"domain"`
+	Company      *string                 `json:"company"`
+	LastReadAt   *string                 `json:"lastReadAt"`
+	Since        string                  `json:"since"`
+	Totals       HiringCounts            `json:"totals"`
+	ByDepartment map[string]HiringCounts `json:"byDepartment"`
+	BySeniority  map[string]HiringCounts `json:"bySeniority"`
+	ByLocation   map[string]HiringCounts `json:"byLocation"`
+	Opened       []HiringChangePosting   `json:"opened"`
+	Closed       []HiringChangePosting   `json:"closed"`
+	Truncated    bool                    `json:"truncated"`
+}

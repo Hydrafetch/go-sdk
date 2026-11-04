@@ -410,3 +410,46 @@ func TestRateResultNeedsATarget(t *testing.T) {
 		t.Fatal("expected an error without RequestID or URL")
 	}
 }
+
+func TestSearchJobsPostsTheQueryAndReturnsTheList(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":[{"title":"Data Engineer","domain":"acme.com","board":"greenhouse","firstSeenAt":"2026-11-01T00:00:00Z"}]}`)
+	})
+	jobs, err := c.SearchJobs(context.Background(), "data engineer", &SearchJobsOptions{Location: "Berlin", Limit: 20})
+	if err != nil {
+		t.Fatalf("SearchJobs: %v", err)
+	}
+	if len(jobs) != 1 || jobs[0].Title != "Data Engineer" || jobs[0].Company != nil {
+		t.Errorf("unexpected jobs %+v", jobs)
+	}
+	if cap.requests[0].URL.Path != "/v1/web/index/jobs/search" {
+		t.Errorf("path = %s", cap.requests[0].URL.Path)
+	}
+	body := cap.bodies[0]
+	if body["query"] != "data engineer" || body["location"] != "Berlin" || body["limit"] != float64(20) {
+		t.Errorf("unexpected body %v", body)
+	}
+	if _, ok := body["remoteOnly"]; ok {
+		t.Errorf("remoteOnly should be left out when false: %v", body)
+	}
+}
+
+func TestHiringChangesSendsDomainsAndAnRFC3339Time(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":[{"domain":"stripe.com","totals":{"open":4,"opened":2,"closed":1}}]}`)
+	})
+	since := time.Date(2026, 10, 1, 0, 0, 0, 0, time.UTC)
+	out, err := c.HiringChanges(context.Background(), []string{"stripe.com"}, since, nil)
+	if err != nil {
+		t.Fatalf("HiringChanges: %v", err)
+	}
+	if len(out) != 1 || out[0].Totals.Opened != 2 {
+		t.Errorf("unexpected changes %+v", out)
+	}
+	if cap.requests[0].URL.Path != "/v1/web/index/jobs/changes" {
+		t.Errorf("path = %s", cap.requests[0].URL.Path)
+	}
+	if cap.bodies[0]["since"] != "2026-10-01T00:00:00Z" {
+		t.Errorf("since = %v", cap.bodies[0]["since"])
+	}
+}

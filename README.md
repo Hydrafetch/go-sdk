@@ -163,6 +163,31 @@ for _, r := range res.Results {
 }
 ```
 
+## Jobs
+
+Search open jobs collected from company career sites and hiring platforms, by the words in the job title:
+
+```go
+jobs, err := hf.SearchJobs(ctx, "data engineer", &hydrafetch.SearchJobsOptions{
+	Location:         "Berlin",
+	PostedWithinDays: 14,
+	Limit:            20,
+})
+for _, j := range jobs {
+	fmt.Println(j.Title, j.Domain, j.FirstSeenAt)
+}
+```
+
+See what changed in a company's hiring since a date: what is open now, what opened and what closed, by department, seniority and location, with the jobs themselves:
+
+```go
+since := time.Now().AddDate(0, -1, 0)
+changes, err := hf.HiringChanges(ctx, []string{"acme.com"}, since, nil)
+fmt.Println(changes[0].Totals) // {Open:42 Opened:6 Closed:3}
+```
+
+A search costs 1 credit per 10 jobs returned, and an empty one is free. Hiring changes cost 1 credit per company we have jobs for; companies we do not track yet come back empty and are free.
+
 ## Brand data
 
 ```go
@@ -250,6 +275,8 @@ hf, err := hydrafetch.New("hf_...",
 | `Markdown(ctx, url)` | `string` | 1 |
 | `Map(ctx, url, *MapOptions)` | `*MapResult` | 1 |
 | `Search(ctx, query, *SearchOptions)` | `*SearchResult` | 1 + 1 per scraped result |
+| `SearchJobs(ctx, query, *SearchJobsOptions)` | `[]OpenJob` | 1 per 10 jobs |
+| `HiringChanges(ctx, domains, since, *HiringChangesOptions)` | `[]CompanyHiringChanges` | 1 per company with jobs |
 | `Extract(ctx, urls, *ExtractOptions)` | `*ExtractResult` | 5 per URL |
 | `Brand(ctx, domain)` | `BrandResult` | 5 |
 | `Logo(ctx, domain, *LogoOptions)` | `BrandResult` | 1 |
