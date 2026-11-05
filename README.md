@@ -112,9 +112,9 @@ out, err := hf.Extract(ctx, []string{"https://shop.example/search?q=ghee"}, &hyd
 m, err := hf.Map(ctx, "https://example.com", &hydrafetch.MapOptions{Limit: 1000})
 
 var docs []string
-for _, u := range m.Links {
-	if strings.Contains(u, "/docs/") {
-		docs = append(docs, u)
+for _, l := range m.Links {
+	if strings.Contains(l.URL, "/docs/") {
+		docs = append(docs, l.URL)
 	}
 }
 ```

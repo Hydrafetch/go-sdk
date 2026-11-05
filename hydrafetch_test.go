@@ -476,3 +476,19 @@ func TestNewsPostsTheQueryAndWindow(t *testing.T) {
 		t.Errorf("scrapeResults should be left out when false: %v", body)
 	}
 }
+
+func TestMapReadsEachLinkWithItsLastmod(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{"url":"https://example.com","links":[{"url":"https://example.com/a","lastmod":"2026-10-20T00:00:00.000Z"},{"url":"https://example.com/b","lastmod":null}],"count":2,"total":53,"truncated":false}}`)
+	})
+	out, err := c.Map(context.Background(), "https://example.com", nil)
+	if err != nil {
+		t.Fatalf("Map: %v", err)
+	}
+	if len(out.Links) != 2 || out.Links[0].URL != "https://example.com/a" || out.Links[0].Lastmod == nil || out.Links[1].Lastmod != nil {
+		t.Errorf("unexpected links %+v", out.Links)
+	}
+	if out.Total != 53 || cap.requests[0].URL.Path != "/v1/web/map" {
+		t.Errorf("unexpected map %+v path %s", out, cap.requests[0].URL.Path)
+	}
+}

@@ -73,12 +73,18 @@ type MapOptions struct {
 	IgnoreQueryParameters bool     `json:"ignoreQueryParameters,omitempty"`
 }
 
+// MapLink is one URL on the site, with when its sitemap says it last changed.
+type MapLink struct {
+	URL     string  `json:"url"`
+	Lastmod *string `json:"lastmod"`
+}
+
 type MapResult struct {
-	URL       string   `json:"url"`
-	Links     []string `json:"links"`
-	Count     int      `json:"count"`
-	Total     int      `json:"total,omitempty"`
-	Truncated bool     `json:"truncated,omitempty"`
+	URL       string    `json:"url"`
+	Links     []MapLink `json:"links"`
+	Count     int       `json:"count"`
+	Total     int       `json:"total,omitempty"`
+	Truncated bool      `json:"truncated,omitempty"`
 }
 
 type SearchOptions struct {
