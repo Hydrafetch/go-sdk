@@ -163,6 +163,19 @@ for _, r := range res.Results {
 }
 ```
 
+## News
+
+Find recent news articles about anything, newest first, each with its outlet and publish time:
+
+```go
+news, err := hf.News(ctx, "acme raises funding", &hydrafetch.NewsOptions{TimeRange: "week", Limit: 10})
+for _, a := range news.Results {
+	fmt.Println(a.PublishedAt, a.Title, a.URL)
+}
+```
+
+A news search costs 1 credit, and one that finds nothing is free. Set `ScrapeResults: true` to also read each article as clean data, at 1 extra credit per article.
+
 ## Jobs
 
 Search open jobs collected from company career sites and hiring platforms, by the words in the job title:
@@ -275,6 +288,7 @@ hf, err := hydrafetch.New("hf_...",
 | `Markdown(ctx, url)` | `string` | 1 |
 | `Map(ctx, url, *MapOptions)` | `*MapResult` | 1 |
 | `Search(ctx, query, *SearchOptions)` | `*SearchResult` | 1 + 1 per scraped result |
+| `News(ctx, query, *NewsOptions)` | `*NewsResult` | 1 + 1 per article read; free when empty |
 | `SearchJobs(ctx, query, *SearchJobsOptions)` | `[]OpenJob` | 1 per 10 jobs |
 | `HiringChanges(ctx, domains, since, *HiringChangesOptions)` | `[]CompanyHiringChanges` | 1 per company with jobs |
 | `Extract(ctx, urls, *ExtractOptions)` | `*ExtractResult` | 5 per URL |

@@ -310,3 +310,32 @@ type CompanyHiringChanges struct {
 	Closed       []HiringChangePosting   `json:"closed"`
 	Truncated    bool                    `json:"truncated"`
 }
+
+// NewsOptions narrows a news search. A search costs 1 credit, and one that finds nothing is free.
+type NewsOptions struct {
+	Limit          int            `json:"limit,omitempty"`
+	TimeRange      string         `json:"timeRange,omitempty"`
+	Country        string         `json:"country,omitempty"`
+	IncludeDomains []string       `json:"includeDomains,omitempty"`
+	ExcludeDomains []string       `json:"excludeDomains,omitempty"`
+	ScrapeResults  bool           `json:"scrapeResults,omitempty"`
+	ScrapeOptions  *ScrapeOptions `json:"scrapeOptions,omitempty"`
+}
+
+// NewsArticle is one article, with the publisher's own URL and when it was published.
+type NewsArticle struct {
+	Title       string        `json:"title"`
+	URL         string        `json:"url"`
+	Source      *string       `json:"source"`
+	PublishedAt string        `json:"publishedAt"`
+	Snippet     *string       `json:"snippet"`
+	ImageURL    *string       `json:"imageUrl"`
+	Data        *ScrapeResult `json:"data"`
+}
+
+// NewsResult holds the articles, newest first. Status is "ok" or "no_results".
+type NewsResult struct {
+	Query   string        `json:"query"`
+	Status  string        `json:"status"`
+	Results []NewsArticle `json:"results"`
+}

@@ -253,6 +253,24 @@ func (c *Client) Map(ctx context.Context, rawURL string, opts *MapOptions) (*Map
 	return &out, nil
 }
 
+// News finds recent news articles about a query, newest first.
+func (c *Client) News(ctx context.Context, query string, opts *NewsOptions) (*NewsResult, error) {
+	body := map[string]any{"query": query}
+	if opts != nil {
+		encoded, _ := json.Marshal(opts)
+		var fields map[string]any
+		_ = json.Unmarshal(encoded, &fields)
+		for k, v := range fields {
+			body[k] = v
+		}
+	}
+	var out NewsResult
+	if err := c.do(ctx, http.MethodPost, "/v1/web/news", body, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // SearchJobs finds open jobs by the words in the job title, newest first.
 func (c *Client) SearchJobs(ctx context.Context, query string, opts *SearchJobsOptions) ([]OpenJob, error) {
 	body := map[string]any{"query": query}

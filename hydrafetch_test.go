@@ -453,3 +453,26 @@ func TestHiringChangesSendsDomainsAndAnRFC3339Time(t *testing.T) {
 		t.Errorf("since = %v", cap.bodies[0]["since"])
 	}
 }
+
+func TestNewsPostsTheQueryAndWindow(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{"query":"acme raises","status":"ok","results":[{"title":"Acme raises $10M","url":"https://example.com/a","publishedAt":"2026-11-04T10:00:00Z"}]}}`)
+	})
+	out, err := c.News(context.Background(), "acme raises", &NewsOptions{TimeRange: "day", Limit: 5})
+	if err != nil {
+		t.Fatalf("News: %v", err)
+	}
+	if out.Status != "ok" || len(out.Results) != 1 || out.Results[0].Source != nil {
+		t.Errorf("unexpected news %+v", out)
+	}
+	if cap.requests[0].URL.Path != "/v1/web/news" {
+		t.Errorf("path = %s", cap.requests[0].URL.Path)
+	}
+	body := cap.bodies[0]
+	if body["query"] != "acme raises" || body["timeRange"] != "day" || body["limit"] != float64(5) {
+		t.Errorf("unexpected body %v", body)
+	}
+	if _, ok := body["scrapeResults"]; ok {
+		t.Errorf("scrapeResults should be left out when false: %v", body)
+	}
+}
