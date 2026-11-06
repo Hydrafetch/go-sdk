@@ -335,7 +335,6 @@ type NewsArticle struct {
 	Source      *string       `json:"source"`
 	PublishedAt string        `json:"publishedAt"`
 	Snippet     *string       `json:"snippet"`
-	ImageURL    *string       `json:"imageUrl"`
 	Data        *ScrapeResult `json:"data"`
 }
 
