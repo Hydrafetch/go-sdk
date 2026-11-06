@@ -13,19 +13,6 @@ const (
 	FormatBrand      Format = "brand"
 )
 
-type Usage struct {
-	CreditsUsed      int    `json:"creditsUsed"`
-	CreditsRemaining int    `json:"creditsRemaining"`
-	Freshness        string `json:"freshness,omitempty"`
-}
-
-type Metadata map[string]any
-
-type Location struct {
-	Country   string   `json:"country,omitempty"`
-	Languages []string `json:"languages,omitempty"`
-}
-
 type ScrapeOptions struct {
 	Formats            []Format          `json:"formats,omitempty"`
 	MaxAge             int               `json:"maxAge,omitempty"`
@@ -42,49 +29,23 @@ type ScrapeOptions struct {
 	Timeout            int               `json:"timeout,omitempty"`
 	Location           *Location         `json:"location,omitempty"`
 	Headers            map[string]string `json:"headers,omitempty"`
-}
-
-type ScrapeResult struct {
-	URL        string   `json:"url"`
-	FinalURL   string   `json:"finalUrl,omitempty"`
-	Redirected bool     `json:"redirected,omitempty"`
-	Status     int      `json:"status,omitempty"`
-	Cached     bool     `json:"cached,omitempty"`
-	Warning    string   `json:"warning,omitempty"`
-	Metadata   Metadata `json:"metadata,omitempty"`
-	Usage      *Usage   `json:"usage,omitempty"`
-	Markdown   string   `json:"markdown,omitempty"`
-	HTML       string   `json:"html,omitempty"`
-	RawHTML    string   `json:"rawHtml,omitempty"`
-	Links      []string `json:"links,omitempty"`
-	Structured any      `json:"structured,omitempty"`
-	Summary    string   `json:"summary,omitempty"`
-	JSON       any      `json:"json,omitempty"`
+	Method             string            `json:"method,omitempty"`
+	Body               string            `json:"body,omitempty"`
+	JSONOptions        map[string]any    `json:"jsonOptions,omitempty"`
 }
 
 type MapOptions struct {
-	IncludeLinks          bool     `json:"includeLinks,omitempty"`
-	Limit                 int      `json:"limit,omitempty"`
-	Search                string   `json:"search,omitempty"`
-	Sitemap               string   `json:"sitemap,omitempty"`
-	SitemapInclude        []string `json:"sitemapInclude,omitempty"`
-	SitemapExclude        []string `json:"sitemapExclude,omitempty"`
-	IncludeSubdomains     bool     `json:"includeSubdomains,omitempty"`
-	IgnoreQueryParameters bool     `json:"ignoreQueryParameters,omitempty"`
-}
-
-// MapLink is one URL on the site, with when its sitemap says it last changed.
-type MapLink struct {
-	URL     string  `json:"url"`
-	Lastmod *string `json:"lastmod"`
-}
-
-type MapResult struct {
-	URL       string    `json:"url"`
-	Links     []MapLink `json:"links"`
-	Count     int       `json:"count"`
-	Total     int       `json:"total,omitempty"`
-	Truncated bool      `json:"truncated,omitempty"`
+	IncludeLinks          bool   `json:"includeLinks,omitempty"`
+	Limit                 int    `json:"limit,omitempty"`
+	Search                string `json:"search,omitempty"`
+	Sitemap               string `json:"sitemap,omitempty"`
+	SitemapInclude        string `json:"sitemapInclude,omitempty"`
+	SitemapExclude        string `json:"sitemapExclude,omitempty"`
+	IncludeSubdomains     bool   `json:"includeSubdomains,omitempty"`
+	IgnoreQueryParameters bool   `json:"ignoreQueryParameters,omitempty"`
+	Order                 string `json:"order,omitempty"`
+	Before                string `json:"before,omitempty"`
+	Offset                int    `json:"offset,omitempty"`
 }
 
 type SearchOptions struct {
@@ -95,20 +56,6 @@ type SearchOptions struct {
 	Country        string         `json:"country,omitempty"`
 	IncludeDomains []string       `json:"includeDomains,omitempty"`
 	ExcludeDomains []string       `json:"excludeDomains,omitempty"`
-}
-
-type SearchItem struct {
-	Title   string        `json:"title"`
-	URL     string        `json:"url"`
-	Snippet string        `json:"snippet"`
-	Rank    int           `json:"rank"`
-	Data    *ScrapeResult `json:"data,omitempty"`
-}
-
-type SearchResult struct {
-	Query   string       `json:"query"`
-	Status  string       `json:"status,omitempty"`
-	Results []SearchItem `json:"results"`
 }
 
 type ExtractOptions struct {
@@ -124,62 +71,22 @@ type ExtractOptions struct {
 	Headers         map[string]string `json:"headers,omitempty"`
 }
 
-type ExtractItem struct {
-	URL    string         `json:"url"`
-	Data   map[string]any `json:"data,omitempty"`
-	Fields map[string]any `json:"fields,omitempty"`
-	Error  string         `json:"error,omitempty"`
-}
-
-type ExtractResult struct {
-	Results []ExtractItem `json:"results"`
-	Sources []any         `json:"sources,omitempty"`
-}
-
 type CrawlOptions struct {
-	Limit           int            `json:"limit,omitempty"`
-	MaxDepth        int            `json:"maxDepth,omitempty"`
-	IncludePaths    []string       `json:"includePaths,omitempty"`
-	ExcludePaths    []string       `json:"excludePaths,omitempty"`
-	AllowSubdomains bool           `json:"allowSubdomains,omitempty"`
-	Webhook         string         `json:"webhook,omitempty"`
-	ScrapeOptions   *ScrapeOptions `json:"scrapeOptions,omitempty"`
+	Limit                 int            `json:"limit,omitempty"`
+	MaxDepth              int            `json:"maxDepth,omitempty"`
+	IncludePaths          []string       `json:"includePaths,omitempty"`
+	ExcludePaths          []string       `json:"excludePaths,omitempty"`
+	AllowSubdomains       bool           `json:"allowSubdomains,omitempty"`
+	AllowExternalLinks    bool           `json:"allowExternalLinks,omitempty"`
+	IgnoreQueryParameters bool           `json:"ignoreQueryParameters,omitempty"`
+	Sitemap               string         `json:"sitemap,omitempty"`
+	Webhook               *Webhook       `json:"webhook,omitempty"`
+	ScrapeOptions         *ScrapeOptions `json:"scrapeOptions,omitempty"`
 }
 
 type BatchOptions struct {
-	Webhook       string         `json:"webhook,omitempty"`
+	Webhook       *Webhook       `json:"webhook,omitempty"`
 	ScrapeOptions *ScrapeOptions `json:"scrapeOptions,omitempty"`
-}
-
-type JobPage struct {
-	URL          string        `json:"url"`
-	RequestedURL string        `json:"requestedUrl,omitempty"`
-	Status       string        `json:"status"`
-	Depth        int           `json:"depth,omitempty"`
-	Error        string        `json:"error,omitempty"`
-	ErrorCode    string        `json:"errorCode,omitempty"`
-	Retryable    bool          `json:"retryable,omitempty"`
-	Data         *ScrapeResult `json:"data,omitempty"`
-}
-
-type Job struct {
-	ID          string    `json:"id"`
-	Kind        string    `json:"kind,omitempty"`
-	Status      string    `json:"status"`
-	SeedURL     string    `json:"seedUrl,omitempty"`
-	Total       int       `json:"total,omitempty"`
-	Completed   int       `json:"completed,omitempty"`
-	Failed      int       `json:"failed,omitempty"`
-	CreditsUsed int       `json:"creditsUsed,omitempty"`
-	Pages       []JobPage `json:"pages,omitempty"`
-}
-
-func (j *Job) Done() bool {
-	switch j.Status {
-	case "completed", "failed", "cancelled":
-		return true
-	}
-	return false
 }
 
 type LogoOptions struct {
@@ -191,45 +98,15 @@ type StyleguideOptions struct {
 	MaxAge *int
 }
 
-type BrandResult map[string]any
-
 type ScreenshotOptions struct {
-	FullPage bool `json:"fullPage,omitempty"`
-	WaitFor  int  `json:"waitFor,omitempty"`
-	Timeout  int  `json:"timeout,omitempty"`
-	MaxAge   int  `json:"maxAge,omitempty"`
+	FullPage       bool   `json:"fullPage,omitempty"`
+	WaitFor        int    `json:"waitFor,omitempty"`
+	Timeout        int    `json:"timeout,omitempty"`
+	MaxAge         int    `json:"maxAge,omitempty"`
+	Viewport       string `json:"viewport,omitempty"`
+	ViewportWidth  int    `json:"viewportWidth,omitempty"`
+	ViewportHeight int    `json:"viewportHeight,omitempty"`
 }
-
-type ScreenshotResult struct {
-	URL            string `json:"url"`
-	FinalURL       string `json:"finalUrl,omitempty"`
-	Status         int    `json:"status,omitempty"`
-	Screenshot     string `json:"screenshot"`
-	ScreenshotType string `json:"screenshotType,omitempty"`
-	Width          int    `json:"width,omitempty"`
-	Height         int    `json:"height,omitempty"`
-	Cached         bool   `json:"cached,omitempty"`
-}
-
-type PageImage struct {
-	Src    string `json:"src"`
-	Alt    string `json:"alt,omitempty"`
-	Width  int    `json:"width,omitempty"`
-	Height int    `json:"height,omitempty"`
-}
-
-type ImagesResult struct {
-	URL      string      `json:"url"`
-	FinalURL string      `json:"finalUrl,omitempty"`
-	Images   []PageImage `json:"images"`
-}
-
-type Rating string
-
-const (
-	RatingGood Rating = "good"
-	RatingBad  Rating = "bad"
-)
 
 type RateResultInput struct {
 	RequestID string   `json:"requestId,omitempty"`
@@ -237,12 +114,6 @@ type RateResultInput struct {
 	Rating    Rating   `json:"rating"`
 	Reasons   []string `json:"reasons,omitempty"`
 	Note      string   `json:"note,omitempty"`
-}
-
-type RateResultResponse struct {
-	ID        string `json:"id"`
-	RequestID string `json:"requestId"`
-	Rating    Rating `json:"rating"`
 }
 
 // SearchJobsOptions narrows a jobs search. Each 10 jobs returned cost 1 credit.
@@ -254,67 +125,8 @@ type SearchJobsOptions struct {
 	IncludeDescriptions bool   `json:"includeDescriptions,omitempty"`
 }
 
-type JobPay struct {
-	Min      *float64 `json:"min"`
-	Max      *float64 `json:"max"`
-	Currency *string  `json:"currency"`
-	Interval *string  `json:"interval"`
-}
-
-// OpenJob is one open job from a company career site or hiring platform.
-type OpenJob struct {
-	Title          string  `json:"title"`
-	Company        *string `json:"company"`
-	Domain         string  `json:"domain"`
-	Board          string  `json:"board"`
-	Department     *string `json:"department"`
-	Location       *string `json:"location"`
-	Remote         *bool   `json:"remote"`
-	EmploymentType *string `json:"employmentType"`
-	PostedAt       *string `json:"postedAt"`
-	FirstSeenAt    string  `json:"firstSeenAt"`
-	URL            *string `json:"url"`
-	ApplyURL       *string `json:"applyUrl"`
-	Pay            *JobPay `json:"pay"`
-	Description    *string `json:"description,omitempty"`
-}
-
 type HiringChangesOptions struct {
 	IncludeDescriptions bool `json:"includeDescriptions,omitempty"`
-}
-
-type HiringCounts struct {
-	Open   int `json:"open"`
-	Opened int `json:"opened"`
-	Closed int `json:"closed"`
-}
-
-type HiringChangePosting struct {
-	Title       string  `json:"title"`
-	Department  *string `json:"department"`
-	Location    *string `json:"location"`
-	Seniority   string  `json:"seniority"`
-	Board       string  `json:"board"`
-	URL         *string `json:"url"`
-	PostedAt    *string `json:"postedAt"`
-	FirstSeenAt string  `json:"firstSeenAt"`
-	ClosedAt    *string `json:"closedAt"`
-	Description *string `json:"description,omitempty"`
-}
-
-// CompanyHiringChanges is what changed in one company's hiring since a date.
-type CompanyHiringChanges struct {
-	Domain       string                  `json:"domain"`
-	Company      *string                 `json:"company"`
-	LastReadAt   *string                 `json:"lastReadAt"`
-	Since        string                  `json:"since"`
-	Totals       HiringCounts            `json:"totals"`
-	ByDepartment map[string]HiringCounts `json:"byDepartment"`
-	BySeniority  map[string]HiringCounts `json:"bySeniority"`
-	ByLocation   map[string]HiringCounts `json:"byLocation"`
-	Opened       []HiringChangePosting   `json:"opened"`
-	Closed       []HiringChangePosting   `json:"closed"`
-	Truncated    bool                    `json:"truncated"`
 }
 
 // NewsOptions narrows a news search. A search costs 1 credit, and one that finds nothing is free.
@@ -326,21 +138,77 @@ type NewsOptions struct {
 	ExcludeDomains []string       `json:"excludeDomains,omitempty"`
 	ScrapeResults  bool           `json:"scrapeResults,omitempty"`
 	ScrapeOptions  *ScrapeOptions `json:"scrapeOptions,omitempty"`
+	MaxAge         int            `json:"maxAge,omitempty"`
 }
 
-// NewsArticle is one article, with the publisher's own URL and when it was published.
-type NewsArticle struct {
-	Title       string        `json:"title"`
-	URL         string        `json:"url"`
-	Source      *string       `json:"source"`
-	PublishedAt string        `json:"publishedAt"`
-	Snippet     *string       `json:"snippet"`
-	Data        *ScrapeResult `json:"data"`
+type Usage = WebUsageDto
+
+type Metadata = WebScrapeMetadataDto
+
+type Location struct {
+	Country   string   `json:"country,omitempty"`
+	Languages []string `json:"languages,omitempty"`
 }
 
-// NewsResult holds the articles, newest first. Status is "ok" or "no_results".
-type NewsResult struct {
-	Query   string        `json:"query"`
-	Status  string        `json:"status"`
-	Results []NewsArticle `json:"results"`
+type ScrapeResult = WebScrapeDataDto
+
+type MapLink = MapURLEntryDto
+
+type MapResult = MapResultDto
+
+type SearchItem = SearchResultItemDto
+
+type SearchResult = SearchResultDto
+
+type ExtractItem = ExtractItemResultDto
+
+type ExtractResult = ExtractResultDto
+
+type Webhook = WebhookDto
+
+type JobPage = CrawlPageResultDto
+
+type Job = CrawlStatusResponseDto
+
+func (j *CrawlStatusResponseDto) Done() bool {
+	switch string(j.Status) {
+	case "completed", "failed", "cancelled":
+		return true
+	}
+	return false
 }
+
+type BrandResult = WebBrandDataDto
+
+type LogoResult = LogoDescriptionDto
+
+type StyleguideResult = WebStyleguideDataDto
+
+type ScreenshotResult = WebScreenshotDataDto
+
+type PageImage = WebImageDto
+
+type ImagesResult = WebImagesDataDto
+
+type Rating = ResultFeedbackDataDtoRating
+
+const (
+	RatingGood Rating = "good"
+	RatingBad  Rating = "bad"
+)
+
+type RateResultResponse = ResultFeedbackDataDto
+
+type JobPay = JobsIndexPayDto
+
+type OpenJob = JobsIndexJobDto
+
+type HiringCounts = JobsIndexCountsDto
+
+type HiringChangePosting = JobsIndexChangePostingDto
+
+type CompanyHiringChanges = JobsIndexCompanyChangesDto
+
+type NewsArticle = NewsResultItemDto
+
+type NewsResult = NewsResultDto

@@ -233,7 +233,10 @@ func (c *Client) Markdown(ctx context.Context, rawURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return page.Markdown, nil
+	if page.Markdown == nil {
+		return "", nil
+	}
+	return *page.Markdown, nil
 }
 
 func (c *Client) Map(ctx context.Context, rawURL string, opts *MapOptions) (*MapResult, error) {
@@ -336,15 +339,15 @@ func (c *Client) Extract(ctx context.Context, urls []string, opts *ExtractOption
 	return &out, nil
 }
 
-func (c *Client) Brand(ctx context.Context, domain string) (BrandResult, error) {
+func (c *Client) Brand(ctx context.Context, domain string) (*BrandResult, error) {
 	var out BrandResult
 	if err := c.do(ctx, http.MethodGet, "/v1/web/brand", nil, url.Values{"domain": {domain}}, &out); err != nil {
 		return nil, err
 	}
-	return out, nil
+	return &out, nil
 }
 
-func (c *Client) Logo(ctx context.Context, domain string, opts *LogoOptions) (BrandResult, error) {
+func (c *Client) Logo(ctx context.Context, domain string, opts *LogoOptions) (*LogoResult, error) {
 	q := url.Values{"domain": {domain}}
 	if opts != nil {
 		if opts.Theme != "" {
@@ -354,14 +357,14 @@ func (c *Client) Logo(ctx context.Context, domain string, opts *LogoOptions) (Br
 			q.Set("type", opts.Type)
 		}
 	}
-	var out BrandResult
+	var out LogoResult
 	if err := c.do(ctx, http.MethodGet, "/v1/web/brand/logo", nil, q, &out); err != nil {
 		return nil, err
 	}
-	return out, nil
+	return &out, nil
 }
 
-func (c *Client) Styleguide(ctx context.Context, domainOrURL string, opts ...StyleguideOptions) (BrandResult, error) {
+func (c *Client) Styleguide(ctx context.Context, domainOrURL string, opts ...StyleguideOptions) (*StyleguideResult, error) {
 	q := url.Values{}
 	lower := strings.ToLower(domainOrURL)
 	if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") {
@@ -374,11 +377,11 @@ func (c *Client) Styleguide(ctx context.Context, domainOrURL string, opts ...Sty
 			q.Set("maxAge", strconv.Itoa(*o.MaxAge))
 		}
 	}
-	var out BrandResult
+	var out StyleguideResult
 	if err := c.do(ctx, http.MethodGet, "/v1/web/styleguide", nil, q, &out); err != nil {
 		return nil, err
 	}
-	return out, nil
+	return &out, nil
 }
 
 func (c *Client) Screenshot(ctx context.Context, rawURL string, opts *ScreenshotOptions) (*ScreenshotResult, error) {

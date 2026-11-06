@@ -1,0 +1,12 @@
+package: hydrafetch
+generate:
+  models: true
+output: generated.go
+output-options:
+  skip-prune: true
+  name-normalizer: ToCamelCaseWithInitialisms
+  type-mapping:
+    string:
+      formats:
+        uuid:
+          type: string

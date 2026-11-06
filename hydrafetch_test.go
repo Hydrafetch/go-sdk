@@ -86,7 +86,7 @@ func TestUnwrapsDataEnvelope(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Scrape: %v", err)
 	}
-	if page.Markdown != "# hi" || page.Status != 200 {
+	if page.Markdown == nil || *page.Markdown != "# hi" || page.Status != 200 {
 		t.Errorf("got %+v", page)
 	}
 }
@@ -271,8 +271,8 @@ func TestRetriesServerErrors(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Scrape: %v", err)
 	}
-	if page.Markdown != "ok" || calls != 3 {
-		t.Errorf("markdown=%q calls=%d", page.Markdown, calls)
+	if page.Markdown == nil || *page.Markdown != "ok" || calls != 3 {
+		t.Errorf("markdown=%v calls=%d", page.Markdown, calls)
 	}
 }
 
@@ -327,7 +327,7 @@ func TestPollsUntilTerminal(t *testing.T) {
 	var seen []string
 	job, err := c.Batch(context.Background(), []string{"https://a.example"}, nil, &WaitOptions{
 		PollInterval: time.Millisecond,
-		OnProgress:   func(j *Job) { seen = append(seen, j.Status) },
+		OnProgress:   func(j *Job) { seen = append(seen, string(j.Status)) },
 	})
 	if err != nil {
 		t.Fatalf("Batch: %v", err)
