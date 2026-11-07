@@ -20,7 +20,10 @@ const (
 	defaultBaseURL    = "https://api.hydrafetch.com"
 	defaultTimeout    = 120 * time.Second
 	defaultMaxRetries = 2
+	callJobTimeout    = 330 * time.Second
 )
+
+var callJobPoll = 2 * time.Second
 
 type Client struct {
 	apiKey        string
@@ -86,6 +89,20 @@ type envelope struct {
 	Meta *struct {
 		RequestID string `json:"requestId"`
 	} `json:"meta"`
+	JobID string `json:"jobId"`
+	Poll  string `json:"poll"`
+}
+
+type callJob struct {
+	JobID  string          `json:"jobId"`
+	Status string          `json:"status"`
+	Result json.RawMessage `json:"result"`
+	Error  *struct {
+		Code    string `json:"code"`
+		Message string `json:"message"`
+		Status  int    `json:"status"`
+		Details any    `json:"details"`
+	} `json:"error"`
 }
 
 func (c *Client) do(ctx context.Context, method, path string, body any, query url.Values, out any) error {
@@ -167,6 +184,9 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 			continue
 		}
 
+		if res.StatusCode == http.StatusAccepted && env.Poll != "" {
+			return c.followCallJob(ctx, env.Poll, out)
+		}
 		if out == nil {
 			return nil
 		}
@@ -180,6 +200,50 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 		return nil
 	}
 	return lastErr
+}
+
+func (c *Client) followCallJob(ctx context.Context, poll string, out any) error {
+	deadline := time.Now().Add(callJobTimeout)
+	for {
+		select {
+		case <-ctx.Done():
+			return &Error{Code: "TIMEOUT", Status: 408, Message: ctx.Err().Error()}
+		case <-time.After(callJobPoll):
+		}
+		var job callJob
+		if err := c.do(ctx, http.MethodGet, poll, nil, nil, &job); err != nil {
+			return err
+		}
+		switch job.Status {
+		case "completed":
+			if out == nil {
+				return nil
+			}
+			var body struct {
+				Data json.RawMessage `json:"data"`
+			}
+			target := job.Result
+			if json.Unmarshal(job.Result, &body) == nil && len(body.Data) > 0 {
+				target = body.Data
+			}
+			if err := json.Unmarshal(target, out); err != nil {
+				return &Error{Code: "DECODE", Status: 200, Message: err.Error()}
+			}
+			return nil
+		case "failed":
+			apiErr := &Error{Code: "JOB_FAILED", Status: 500, Message: "The job failed.", RequestID: job.JobID}
+			if job.Error != nil {
+				apiErr.Code, apiErr.Message, apiErr.Details = job.Error.Code, job.Error.Message, job.Error.Details
+				if job.Error.Status != 0 {
+					apiErr.Status = job.Error.Status
+				}
+			}
+			return apiErr
+		}
+		if time.Now().Add(callJobPoll).After(deadline) {
+			return &Error{Code: "TIMEOUT", Status: 408, Message: "The job did not finish in time; poll " + poll + " for its result."}
+		}
+	}
 }
 
 func (c *Client) LastRequestID() string {

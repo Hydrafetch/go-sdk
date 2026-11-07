@@ -492,3 +492,45 @@ func TestMapReadsEachLinkWithItsLastmod(t *testing.T) {
 		t.Errorf("unexpected map %+v path %s", out, cap.requests[0].URL.Path)
 	}
 }
+
+func TestA202IsFollowedUntilTheJobCompletes(t *testing.T) {
+	callJobPoll = time.Millisecond
+	polls := 0
+	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v1/web/scrape" {
+			w.WriteHeader(http.StatusAccepted)
+			_, _ = io.WriteString(w, `{"jobId":"j-1","status":"running","poll":"/v1/web/jobs/j-1"}`)
+			return
+		}
+		polls++
+		if polls < 2 {
+			_, _ = io.WriteString(w, `{"jobId":"j-1","status":"running"}`)
+			return
+		}
+		_, _ = io.WriteString(w, `{"jobId":"j-1","status":"completed","result":{"data":{"url":"https://example.com","markdown":"# Hi"}}}`)
+	})
+	page, err := c.Scrape(context.Background(), "https://example.com", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if page.Markdown == nil || *page.Markdown != "# Hi" {
+		t.Fatalf("got %+v", page)
+	}
+}
+
+func TestAFailedJobReturnsTheErrorTheCallWouldHave(t *testing.T) {
+	callJobPoll = time.Millisecond
+	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v1/web/scrape" {
+			w.WriteHeader(http.StatusAccepted)
+			_, _ = io.WriteString(w, `{"jobId":"j-1","status":"running","poll":"/v1/web/jobs/j-1"}`)
+			return
+		}
+		_, _ = io.WriteString(w, `{"jobId":"j-1","status":"failed","error":{"code":"SERVICE_UNAVAILABLE","message":"walled","status":503}}`)
+	})
+	_, err := c.Scrape(context.Background(), "https://example.com", nil)
+	var apiErr *Error
+	if !errors.As(err, &apiErr) || apiErr.Code != "SERVICE_UNAVAILABLE" || apiErr.Status != 503 {
+		t.Fatalf("got %v", err)
+	}
+}
