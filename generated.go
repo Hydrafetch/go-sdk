@@ -150,6 +150,42 @@ func (e BrandNaicsDtoLevel) Valid() bool {
 	}
 }
 
+// Defines values for CallAcceptedDtoStatus.
+const (
+	CallAcceptedDtoStatusRunning CallAcceptedDtoStatus = "running"
+)
+
+// Valid indicates whether the value is a known member of the CallAcceptedDtoStatus enum.
+func (e CallAcceptedDtoStatus) Valid() bool {
+	switch e {
+	case CallAcceptedDtoStatusRunning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CallJobStateDtoStatus.
+const (
+	CallJobStateDtoStatusCompleted CallJobStateDtoStatus = "completed"
+	CallJobStateDtoStatusFailed    CallJobStateDtoStatus = "failed"
+	CallJobStateDtoStatusRunning   CallJobStateDtoStatus = "running"
+)
+
+// Valid indicates whether the value is a known member of the CallJobStateDtoStatus enum.
+func (e CallJobStateDtoStatus) Valid() bool {
+	switch e {
+	case CallJobStateDtoStatusCompleted:
+		return true
+	case CallJobStateDtoStatusFailed:
+		return true
+	case CallJobStateDtoStatusRunning:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for CrawlAcceptedDtoStatus.
 const (
 	CrawlAcceptedDtoStatusQueued CrawlAcceptedDtoStatus = "queued"
@@ -435,21 +471,6 @@ func (e ResultFeedbackDtoReasons) Valid() bool {
 	case Slow:
 		return true
 	case WrongContent:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for ScrapeAcceptedDtoStatus.
-const (
-	ScrapeAcceptedDtoStatusQueued ScrapeAcceptedDtoStatus = "queued"
-)
-
-// Valid indicates whether the value is a known member of the ScrapeAcceptedDtoStatus enum.
-func (e ScrapeAcceptedDtoStatus) Valid() bool {
-	switch e {
-	case ScrapeAcceptedDtoStatusQueued:
 		return true
 	default:
 		return false
@@ -1315,6 +1336,53 @@ type BrandSocialDto struct {
 	URL string `json:"url"`
 }
 
+// CallAcceptedDto defines model for CallAcceptedDto.
+type CallAcceptedDto struct {
+	// JobID Example: 019f3c09-6fae-740f-9257-10c2b6af7f43
+	JobID string `json:"jobId"`
+
+	// Poll Poll this path until the status is completed or failed.
+	//
+	// Example: /v1/web/jobs/019f3c09-6fae-740f-9257-10c2b6af7f43
+	Poll string `json:"poll"`
+
+	// Status Example: running
+	Status CallAcceptedDtoStatus `json:"status"`
+}
+
+// CallAcceptedDtoStatus Example: running
+type CallAcceptedDtoStatus string
+
+// CallJobErrorDto defines model for CallJobErrorDto.
+type CallJobErrorDto struct {
+	// Code Example: SERVICE_UNAVAILABLE
+	Code    string                  `json:"code"`
+	Details *map[string]interface{} `json:"details,omitempty"`
+
+	// Message Example: The origin served an anti-bot challenge rather than the page; retryable.
+	Message string `json:"message"`
+
+	// Status The HTTP status the call would have answered with.
+	//
+	// Example: 503
+	Status float32 `json:"status"`
+}
+
+// CallJobStateDto defines model for CallJobStateDto.
+type CallJobStateDto struct {
+	Error *CallJobErrorDto `json:"error,omitempty"`
+
+	// JobID Example: 019f3c09-6fae-740f-9257-10c2b6af7f43
+	JobID string `json:"jobId"`
+
+	// Result When completed: exactly the body the call returns when it answers in time.
+	Result *map[string]interface{} `json:"result,omitempty"`
+	Status CallJobStateDtoStatus   `json:"status"`
+}
+
+// CallJobStateDtoStatus defines model for CallJobStateDto.Status.
+type CallJobStateDtoStatus string
+
 // CrawlAcceptedDto defines model for CrawlAcceptedDto.
 type CrawlAcceptedDto struct {
 	// CrawlID Poll this crawl id for progress and results.
@@ -2138,24 +2206,6 @@ type ResultFeedbackDtoReasons string
 type ResultFeedbackResponseDto struct {
 	Data ResultFeedbackDataDto `json:"data"`
 }
-
-// ScrapeAcceptedDto defines model for ScrapeAcceptedDto.
-type ScrapeAcceptedDto struct {
-	// JobID Poll this job id at GET /v1/web/scrape/{id}.
-	//
-	// Example: 019f3c09-6fae-740f-9257-10c2b6af7f43
-	JobID string `json:"jobId"`
-
-	// Status Only returned when the request asked for `async: true`.
-	//
-	// Example: queued
-	Status ScrapeAcceptedDtoStatus `json:"status"`
-}
-
-// ScrapeAcceptedDtoStatus Only returned when the request asked for `async: true`.
-//
-// Example: queued
-type ScrapeAcceptedDtoStatus string
 
 // ScrapeFormatRequestDto defines model for ScrapeFormatRequestDto.
 type ScrapeFormatRequestDto struct {
