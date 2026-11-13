@@ -1103,6 +1103,24 @@ type BatchRequestDto struct {
 	Webhook *WebhookDto `json:"webhook,omitempty"`
 }
 
+// BrandAddressDto defines model for BrandAddressDto.
+type BrandAddressDto struct {
+	// City Example: South San Francisco
+	City *string `json:"city"`
+
+	// Country Example: US
+	Country *string `json:"country"`
+
+	// PostalCode Example: 94080
+	PostalCode *string `json:"postalCode"`
+
+	// Region Example: CA
+	Region *string `json:"region"`
+
+	// Street Example: 354 Oyster Point Blvd
+	Street *string `json:"street"`
+}
+
 // BrandAssetDto defines model for BrandAssetDto.
 type BrandAssetDto struct {
 	// Blurhash Tiny placeholder hash, so a client can render something before the image lands.
@@ -1182,13 +1200,13 @@ type BrandFieldProvenanceDto struct {
 	// Confidence Example: 0.9
 	Confidence *float32 `json:"confidence,omitempty"`
 
-	// Source `declared` the site said it in its own markup. `harvested` we processed an asset or read its CSS. `inferred` a model produced it from the page. `external` an enrichment source rather than the site.
+	// Source `declared` the site said it in its own markup. `harvested` we processed an asset or read its CSS. `inferred` we worked it out rather than read it, such as a name taken from the domain. `external` an enrichment source rather than the site.
 	//
 	// Example: declared
 	Source BrandFieldProvenanceDtoSource `json:"source"`
 }
 
-// BrandFieldProvenanceDtoSource `declared` the site said it in its own markup. `harvested` we processed an asset or read its CSS. `inferred` a model produced it from the page. `external` an enrichment source rather than the site.
+// BrandFieldProvenanceDtoSource `declared` the site said it in its own markup. `harvested` we processed an asset or read its CSS. `inferred` we worked it out rather than read it, such as a name taken from the domain. `external` an enrichment source rather than the site.
 //
 // Example: declared
 type BrandFieldProvenanceDtoSource string
@@ -1883,7 +1901,7 @@ type JSONOptionsDto struct {
 
 // LocationDto defines model for LocationDto.
 type LocationDto struct {
-	// Country ISO 3166 alpha-2 country to fetch the page as if from.
+	// Country Two-letter country to read the page from: `us` or `de`. Any other country is refused with a 400 that lists the supported codes.
 	//
 	// Example: us
 	Country *string `json:"country,omitempty"`
@@ -2155,19 +2173,6 @@ type NewsResultItemDto struct {
 	URL string `json:"url"`
 }
 
-// OptLocationDto defines model for OptLocationDto.
-type OptLocationDto struct {
-	// Country ISO 3166 alpha-2 country to fetch as if from.
-	//
-	// Example: us
-	Country *string `json:"country,omitempty"`
-
-	// Languages Preferred content languages, most-preferred first.
-	//
-	// Example: ["en-US","en"]
-	Languages *[]string `json:"languages,omitempty"`
-}
-
 // ResultFeedbackDataDto defines model for ResultFeedbackDataDto.
 type ResultFeedbackDataDto struct {
 	ID        string                      `json:"id"`
@@ -2212,7 +2217,7 @@ type ScrapeFormatRequestDto struct {
 	// Async Return a job id immediately instead of waiting for the result. Poll GET /v1/web/scrape/{id}. Opt in only: a synchronous call never degrades to a job id on its own, so you get a page or an error, not two response shapes.
 	Async *bool `json:"async,omitempty"`
 
-	// BlockAds Remove common ad and tracking elements. Default true.
+	// BlockAds Remove ads and tracking elements. Default true.
 	BlockAds *bool `json:"blockAds,omitempty"`
 
 	// Body Request body, sent verbatim. Only used when `method` is POST. Set the content type yourself via `headers`; nothing is assumed about the format.
@@ -2222,6 +2227,12 @@ type ScrapeFormatRequestDto struct {
 
 	// CacheOnly Only serve from cache. If there is no fresh cached copy, return 404 instead of fetching.
 	CacheOnly *bool `json:"cacheOnly,omitempty"`
+
+	// DismissCookies Remove cookie and consent banners. Default true. Set false to keep them; a banner the site adds with scripts after load is kept only when the page is rendered.
+	DismissCookies *bool `json:"dismissCookies,omitempty"`
+
+	// DismissPopups Close newsletter and promotion popups when the page is rendered. Default true. Set false to keep them.
+	DismissPopups *bool `json:"dismissPopups,omitempty"`
 
 	// ExcludeTags CSS selectors to strip before extraction.
 	//
@@ -2255,6 +2266,9 @@ type ScrapeFormatRequestDto struct {
 	// RemoveBase64Images Strip inline base64 images from the output. Default true.
 	RemoveBase64Images *bool `json:"removeBase64Images,omitempty"`
 
+	// Render Always read the page in a browser, as a visitor sees it once its scripts have run. Default false: the page is read in a browser only when its HTML is not enough. Combine with dismissCookies and dismissPopups set to false to keep what scripts add after load.
+	Render *bool `json:"render,omitempty"`
+
 	// StoreInCache Persist the capture for later re-extraction. Default true.
 	StoreInCache *bool `json:"storeInCache,omitempty"`
 
@@ -2275,8 +2289,14 @@ type ScrapeFormatRequestDtoMethod string
 
 // ScrapeOptionsDto defines model for ScrapeOptionsDto.
 type ScrapeOptionsDto struct {
-	// BlockAds Remove common ad and tracking elements. Default true.
+	// BlockAds Remove ads and tracking elements. Default true.
 	BlockAds *bool `json:"blockAds,omitempty"`
+
+	// DismissCookies Remove cookie and consent banners. Default true. Set false to keep them; a banner the site adds with scripts after load is kept only when the page is rendered.
+	DismissCookies *bool `json:"dismissCookies,omitempty"`
+
+	// DismissPopups Close newsletter and promotion popups when the page is rendered. Default true. Set false to keep them.
+	DismissPopups *bool `json:"dismissPopups,omitempty"`
 
 	// ExcludeTags CSS selectors to strip before extraction.
 	ExcludeTags *[]string `json:"excludeTags,omitempty"`
@@ -2293,8 +2313,8 @@ type ScrapeOptionsDto struct {
 	IncludeLinks *bool `json:"includeLinks,omitempty"`
 
 	// IncludeTags CSS selectors to keep.
-	IncludeTags *[]string       `json:"includeTags,omitempty"`
-	Location    *OptLocationDto `json:"location,omitempty"`
+	IncludeTags *[]string    `json:"includeTags,omitempty"`
+	Location    *LocationDto `json:"location,omitempty"`
 
 	// MaxAge Serve a page from cache if younger than this many milliseconds.
 	MaxAge *int `json:"maxAge,omitempty"`
@@ -2307,6 +2327,9 @@ type ScrapeOptionsDto struct {
 
 	// RemoveBase64Images Strip inline base64 images. Default true.
 	RemoveBase64Images *bool `json:"removeBase64Images,omitempty"`
+
+	// Render Always read the page in a browser, as a visitor sees it once its scripts have run. Default false: the page is read in a browser only when its HTML is not enough. Combine with dismissCookies and dismissPopups set to false to keep what scripts add after load.
+	Render *bool `json:"render,omitempty"`
 
 	// Timeout Per-page time budget, in milliseconds.
 	Timeout *int `json:"timeout,omitempty"`
@@ -2323,7 +2346,7 @@ type ScrapeRequestDto struct {
 	// Async Return a job id immediately instead of waiting for the result. Poll GET /v1/web/scrape/{id}. Opt in only: a synchronous call never degrades to a job id on its own, so you get a page or an error, not two response shapes.
 	Async *bool `json:"async,omitempty"`
 
-	// BlockAds Remove common ad and tracking elements. Default true.
+	// BlockAds Remove ads and tracking elements. Default true.
 	BlockAds *bool `json:"blockAds,omitempty"`
 
 	// Body Request body, sent verbatim. Only used when `method` is POST. Set the content type yourself via `headers`; nothing is assumed about the format.
@@ -2333,6 +2356,12 @@ type ScrapeRequestDto struct {
 
 	// CacheOnly Only serve from cache. If there is no fresh cached copy, return 404 instead of fetching.
 	CacheOnly *bool `json:"cacheOnly,omitempty"`
+
+	// DismissCookies Remove cookie and consent banners. Default true. Set false to keep them; a banner the site adds with scripts after load is kept only when the page is rendered.
+	DismissCookies *bool `json:"dismissCookies,omitempty"`
+
+	// DismissPopups Close newsletter and promotion popups when the page is rendered. Default true. Set false to keep them.
+	DismissPopups *bool `json:"dismissPopups,omitempty"`
 
 	// ExcludeTags CSS selectors to strip before extraction.
 	//
@@ -2373,6 +2402,9 @@ type ScrapeRequestDto struct {
 
 	// RemoveBase64Images Strip inline base64 images from the output. Default true.
 	RemoveBase64Images *bool `json:"removeBase64Images,omitempty"`
+
+	// Render Always read the page in a browser, as a visitor sees it once its scripts have run. Default false: the page is read in a browser only when its HTML is not enough. Combine with dismissCookies and dismissPopups set to false to keep what scripts add after load.
+	Render *bool `json:"render,omitempty"`
 
 	// StoreInCache Persist the capture for later re-extraction. Default true.
 	StoreInCache *bool `json:"storeInCache,omitempty"`
@@ -2421,6 +2453,12 @@ type ScrapeStatusResponseDtoStatus string
 
 // ScreenshotRequestDto defines model for ScreenshotRequestDto.
 type ScreenshotRequestDto struct {
+	// DismissCookies Accept cookie and consent banners before the capture. Default true. Set false to capture them.
+	DismissCookies *bool `json:"dismissCookies,omitempty"`
+
+	// DismissPopups Clear popups and overlays covering the page before the capture. Default true. Set false to capture them.
+	DismissPopups *bool `json:"dismissPopups,omitempty"`
+
 	// FullPage Capture the entire scrollable page instead of just the viewport. Default off.
 	//
 	// Example: true
@@ -2917,6 +2955,9 @@ type StyleguideWebfontDtoType string
 
 // WebBrandDataDto defines model for WebBrandDataDto.
 type WebBrandDataDto struct {
+	// Address The address the site publishes for the company.
+	Address *BrandAddressDto `json:"address,omitempty"`
+
 	// Aliases Only when this brand is known by more than its canonical domain.
 	Aliases *[]string       `json:"aliases,omitempty"`
 	Assets  []BrandAssetDto `json:"assets"`
@@ -2934,15 +2975,30 @@ type WebBrandDataDto struct {
 	Email *string        `json:"email,omitempty"`
 	Fonts []BrandFontDto `json:"fonts"`
 
+	// FoundedYear The year the site says the company was founded.
+	//
+	// Example: 2010
+	FoundedYear *float32 `json:"foundedYear,omitempty"`
+
 	// LegalName Example: Stripe, Inc.
 	LegalName *string       `json:"legalName,omitempty"`
 	Links     BrandLinksDto `json:"links"`
+
+	// MetaDescription The site's own meta description, word for word.
+	//
+	// Example: Stripe powers online and in-person payment processing for businesses of all sizes.
+	MetaDescription *string `json:"metaDescription,omitempty"`
 
 	// Naics Industry, as a real NAICS code rather than a phrase nobody can group on.
 	Naics *BrandNaicsDto `json:"naics,omitempty"`
 
 	// Name Example: Stripe
 	Name *string `json:"name"`
+
+	// Phone A phone number the site publishes for the company.
+	//
+	// Example: +1 888 926 2289
+	Phone *string `json:"phone,omitempty"`
 
 	// QueriedDomain Only when you asked for a different domain that resolved here.
 	//

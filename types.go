@@ -24,6 +24,9 @@ type ScrapeOptions struct {
 	ExcludeTags        []string          `json:"excludeTags,omitempty"`
 	RemoveBase64Images *bool             `json:"removeBase64Images,omitempty"`
 	BlockAds           *bool             `json:"blockAds,omitempty"`
+	DismissCookies     *bool             `json:"dismissCookies,omitempty"`
+	DismissPopups      *bool             `json:"dismissPopups,omitempty"`
+	Render             bool              `json:"render,omitempty"`
 	IncludeLinks       *bool             `json:"includeLinks,omitempty"`
 	WaitFor            int               `json:"waitFor,omitempty"`
 	Timeout            int               `json:"timeout,omitempty"`
@@ -106,6 +109,8 @@ type ScreenshotOptions struct {
 	Viewport       string `json:"viewport,omitempty"`
 	ViewportWidth  int    `json:"viewportWidth,omitempty"`
 	ViewportHeight int    `json:"viewportHeight,omitempty"`
+	DismissCookies *bool  `json:"dismissCookies,omitempty"`
+	DismissPopups  *bool  `json:"dismissPopups,omitempty"`
 }
 
 type RateResultInput struct {
