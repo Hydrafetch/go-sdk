@@ -575,3 +575,27 @@ func TestReturnsAtOnceWhenAskedToWaitTooLong(t *testing.T) {
 		t.Errorf("err=%v calls=%d", err, calls)
 	}
 }
+
+func TestReusesOneIdempotencyKeyAcrossRetries(t *testing.T) {
+	var keys []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		keys = append(keys, r.Header.Get("Idempotency-Key"))
+		w.Header().Set("Content-Type", "application/json")
+		if len(keys) == 1 {
+			writeJSON(w, 503, `{"success":false,"error":{"message":"busy"}}`)
+			return
+		}
+		writeJSON(w, 200, `{"success":true,"data":{"markdown":"ok"}}`)
+	}))
+	defer srv.Close()
+
+	c, _ := New("hf_test", WithBaseURL(srv.URL), WithMaxRetries(2))
+	for i := 0; i < 2; i++ {
+		if _, err := c.Scrape(context.Background(), "https://example.com", nil); err != nil {
+			t.Fatalf("Scrape: %v", err)
+		}
+	}
+	if len(keys) != 3 || keys[0] == "" || keys[0] != keys[1] || keys[1] == keys[2] {
+		t.Errorf("keys = %v", keys)
+	}
+}

@@ -3,6 +3,8 @@ package hydrafetch
 import (
 	"bytes"
 	"context"
+	crand "crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -119,6 +121,10 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 		}
 	}
 
+	idempotencyKey := ""
+	if method == http.MethodPost {
+		idempotencyKey = newIdempotencyKey()
+	}
 	var lastErr error
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		var reader io.Reader
@@ -131,6 +137,9 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 		}
 		req.Header.Set("X-API-Key", c.apiKey)
 		req.Header.Set("Accept", "application/json")
+		if idempotencyKey != "" {
+			req.Header.Set("Idempotency-Key", idempotencyKey)
+		}
 		if payload != nil {
 			req.Header.Set("Content-Type", "application/json")
 		}
@@ -285,6 +294,14 @@ func wait(ctx context.Context, d time.Duration) {
 	case <-ctx.Done():
 	case <-time.After(d):
 	}
+}
+
+func newIdempotencyKey() string {
+	var b [16]byte
+	if _, err := crand.Read(b[:]); err != nil {
+		return strconv.FormatInt(time.Now().UnixNano(), 36) + strconv.FormatInt(rand.Int63(), 36)
+	}
+	return hex.EncodeToString(b[:])
 }
 
 func retryAfter(header string, details any) int {

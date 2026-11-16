@@ -24,6 +24,8 @@ func (e *Error) IsOutOfCredits() bool { return e.Status == 402 }
 
 func (e *Error) IsInvalidRequest() bool { return e.Status == 400 || e.Status == 422 }
 
-func (e *Error) IsRetryable() bool { return e.Status == 429 || e.Status >= 500 }
+func (e *Error) IsRetryable() bool {
+	return e.Status == 429 || e.Status >= 500 || e.Code == "IDEMPOTENCY_IN_PROGRESS"
+}
 
 func (e *Error) IsTimeout() bool { return e.Code == "TIMEOUT" }
