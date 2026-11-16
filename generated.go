@@ -797,23 +797,29 @@ func (e WebErrorSuccess) Valid() bool {
 
 // Defines values for WebErrorBodyCode.
 const (
-	FORBIDDEN           WebErrorBodyCode = "FORBIDDEN"
-	INSUFFICIENTCREDITS WebErrorBodyCode = "INSUFFICIENT_CREDITS"
-	INTERNALSERVERERROR WebErrorBodyCode = "INTERNAL_SERVER_ERROR"
-	INVALIDINPUT        WebErrorBodyCode = "INVALID_INPUT"
-	NOTFOUND            WebErrorBodyCode = "NOT_FOUND"
-	SERVICEUNAVAILABLE  WebErrorBodyCode = "SERVICE_UNAVAILABLE"
-	TOOMANYREQUESTS     WebErrorBodyCode = "TOO_MANY_REQUESTS"
-	UNAUTHORIZED        WebErrorBodyCode = "UNAUTHORIZED"
-	UPSTREAMUNREACHABLE WebErrorBodyCode = "UPSTREAM_UNREACHABLE"
-	VALIDATIONERROR     WebErrorBodyCode = "VALIDATION_ERROR"
-	WORKSPACEBANNED     WebErrorBodyCode = "WORKSPACE_BANNED"
+	FORBIDDEN             WebErrorBodyCode = "FORBIDDEN"
+	IDEMPOTENCYINPROGRESS WebErrorBodyCode = "IDEMPOTENCY_IN_PROGRESS"
+	IDEMPOTENCYKEYREUSED  WebErrorBodyCode = "IDEMPOTENCY_KEY_REUSED"
+	INSUFFICIENTCREDITS   WebErrorBodyCode = "INSUFFICIENT_CREDITS"
+	INTERNALSERVERERROR   WebErrorBodyCode = "INTERNAL_SERVER_ERROR"
+	INVALIDINPUT          WebErrorBodyCode = "INVALID_INPUT"
+	NOTFOUND              WebErrorBodyCode = "NOT_FOUND"
+	SERVICEUNAVAILABLE    WebErrorBodyCode = "SERVICE_UNAVAILABLE"
+	TOOMANYREQUESTS       WebErrorBodyCode = "TOO_MANY_REQUESTS"
+	UNAUTHORIZED          WebErrorBodyCode = "UNAUTHORIZED"
+	UPSTREAMUNREACHABLE   WebErrorBodyCode = "UPSTREAM_UNREACHABLE"
+	VALIDATIONERROR       WebErrorBodyCode = "VALIDATION_ERROR"
+	WORKSPACEBANNED       WebErrorBodyCode = "WORKSPACE_BANNED"
 )
 
 // Valid indicates whether the value is a known member of the WebErrorBodyCode enum.
 func (e WebErrorBodyCode) Valid() bool {
 	switch e {
 	case FORBIDDEN:
+		return true
+	case IDEMPOTENCYINPROGRESS:
+		return true
+	case IDEMPOTENCYKEYREUSED:
 		return true
 	case INSUFFICIENTCREDITS:
 		return true
@@ -1959,7 +1965,7 @@ type MapRequestDto struct {
 	// Example: false
 	IgnoreQueryParameters *bool `json:"ignoreQueryParameters,omitempty"`
 
-	// IncludeLinks Also include same-site links found on the starting page, not just the site's page list.
+	// IncludeLinks Also include same-site links found on the starting page, not just the site's page list. A site with no page list gets them either way.
 	//
 	// Example: true
 	IncludeLinks *bool `json:"includeLinks,omitempty"`
@@ -3524,10 +3530,22 @@ type WebhookDto struct {
 // WebhookDtoEvents defines model for WebhookDto.Events.
 type WebhookDtoEvents string
 
+// CrawlStartBatchParams defines parameters for CrawlStartBatch.
+type CrawlStartBatchParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
 // BrandGetParams defines parameters for BrandGet.
 type BrandGetParams struct {
 	// Domain Domain to resolve. A URL works too.
 	Domain string `form:"domain" json:"domain"`
+}
+
+// BrandBatchParams defines parameters for BrandBatch.
+type BrandBatchParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
 }
 
 // BrandLogoParams defines parameters for BrandLogo.
@@ -3555,6 +3573,54 @@ type BrandSearchParams struct {
 	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// CrawlStartCrawlParams defines parameters for CrawlStartCrawl.
+type CrawlStartCrawlParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ExtractRunParams defines parameters for ExtractRun.
+type ExtractRunParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ResultFeedbackRateResultParams defines parameters for ResultFeedbackRateResult.
+type ResultFeedbackRateResultParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeHTMLParams defines parameters for ScrapeHTML.
+type ScrapeHTMLParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// MediaImagesParams defines parameters for MediaImages.
+type MediaImagesParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// JobsIndexChangesParams defines parameters for JobsIndexChanges.
+type JobsIndexChangesParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// JobsIndexSearchParams defines parameters for JobsIndexSearch.
+type JobsIndexSearchParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeLinksParams defines parameters for ScrapeLinks.
+type ScrapeLinksParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
 // LogoServeParams defines parameters for LogoServe.
 type LogoServeParams struct {
 	Fallback *LogoServeParamsFallback `form:"fallback,omitempty" json:"fallback,omitempty"`
@@ -3576,6 +3642,54 @@ type LogoServeParamsType string
 
 // LogoServeParamsTheme defines parameters for LogoServe.
 type LogoServeParamsTheme string
+
+// CrawlMapUrlsParams defines parameters for CrawlMapUrls.
+type CrawlMapUrlsParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeMarkdownParams defines parameters for ScrapeMarkdown.
+type ScrapeMarkdownParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// NewsRunParams defines parameters for NewsRun.
+type NewsRunParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeRawHTMLParams defines parameters for ScrapeRawHTML.
+type ScrapeRawHTMLParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeParams defines parameters for Scrape.
+type ScrapeParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// MediaScreenshotParams defines parameters for MediaScreenshot.
+type MediaScreenshotParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// SearchRunParams defines parameters for SearchRun.
+type SearchRunParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
+
+// ScrapeStructuredParams defines parameters for ScrapeStructured.
+type ScrapeStructuredParams struct {
+	// IdempotencyKey Any unique string up to 255 visible characters. Send the same key when you retry a request: for 12 hours a repeat returns the first answer again, with an Idempotent-Replayed: true header, without doing the work or charging a second time. A repeat that arrives while the first is still running gets 409 IDEMPOTENCY_IN_PROGRESS; the same key with a different body gets 409 IDEMPOTENCY_KEY_REUSED.
+	IdempotencyKey *string `json:"Idempotency-Key,omitempty"`
+}
 
 // StyleguideGetParams defines parameters for StyleguideGet.
 type StyleguideGetParams struct {
