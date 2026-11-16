@@ -3,11 +3,12 @@ package hydrafetch
 import "fmt"
 
 type Error struct {
-	Code      string
-	Message   string
-	Status    int
-	RequestID string
-	Details   any
+	Code       string
+	Message    string
+	Status     int
+	RequestID  string
+	Details    any
+	RetryAfter int
 }
 
 func (e *Error) Error() string {

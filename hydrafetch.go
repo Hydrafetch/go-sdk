@@ -176,11 +176,16 @@ func (c *Client) do(ctx context.Context, method, path string, body any, query ur
 			if env.Meta != nil {
 				apiErr.RequestID = env.Meta.RequestID
 			}
-			if !apiErr.IsRetryable() || attempt == c.maxRetries {
+			apiErr.RetryAfter = retryAfter(res.Header.Get("Retry-After"), apiErr.Details)
+			if !apiErr.IsRetryable() || attempt == c.maxRetries || apiErr.RetryAfter > maxRetryWaitSeconds {
 				return apiErr
 			}
 			lastErr = apiErr
-			sleep(ctx, attempt)
+			if apiErr.RetryAfter > 0 {
+				wait(ctx, time.Duration(apiErr.RetryAfter)*time.Second)
+			} else {
+				sleep(ctx, attempt)
+			}
 			continue
 		}
 
@@ -262,12 +267,40 @@ func (c *Client) RateResult(ctx context.Context, in RateResultInput) (*RateResul
 	return &out, nil
 }
 
+const (
+	maxRetryWaitSeconds = 30
+	backoffCap          = 8 * time.Second
+)
+
 func sleep(ctx context.Context, attempt int) {
-	d := time.Duration(1<<attempt)*500*time.Millisecond + time.Duration(rand.Intn(250))*time.Millisecond
+	ceiling := time.Duration(1<<min(attempt, 5)) * 500 * time.Millisecond
+	if ceiling > backoffCap {
+		ceiling = backoffCap
+	}
+	wait(ctx, time.Duration(rand.Int63n(int64(ceiling)+1)))
+}
+
+func wait(ctx context.Context, d time.Duration) {
 	select {
 	case <-ctx.Done():
 	case <-time.After(d):
 	}
+}
+
+func retryAfter(header string, details any) int {
+	if n, err := strconv.Atoi(strings.TrimSpace(header)); err == nil && n > 0 {
+		return n
+	}
+	fields, ok := details.(map[string]any)
+	if !ok {
+		return 0
+	}
+	for _, key := range []string{"retryAfterSeconds", "retryAfter"} {
+		if v, ok := fields[key].(float64); ok && v > 0 && v == float64(int(v)) {
+			return int(v)
+		}
+	}
+	return 0
 }
 
 func scrapeBody(rawURL string, opts *ScrapeOptions) map[string]any {

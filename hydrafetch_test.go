@@ -534,3 +534,44 @@ func TestAFailedJobReturnsTheErrorTheCallWouldHave(t *testing.T) {
 		t.Fatalf("got %v", err)
 	}
 }
+
+func TestWaitsForRetryAfter(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.Header().Set("Content-Type", "application/json")
+		if calls == 1 {
+			w.Header().Set("Retry-After", "1")
+			writeJSON(w, 429, `{"success":false,"error":{"message":"slow"}}`)
+			return
+		}
+		writeJSON(w, 200, `{"success":true,"data":{"markdown":"ok"}}`)
+	}))
+	defer srv.Close()
+
+	c, _ := New("hf_test", WithBaseURL(srv.URL), WithMaxRetries(2))
+	started := time.Now()
+	if _, err := c.Scrape(context.Background(), "https://example.com", nil); err != nil {
+		t.Fatalf("Scrape: %v", err)
+	}
+	if elapsed := time.Since(started); elapsed < 950*time.Millisecond || calls != 2 {
+		t.Errorf("elapsed=%v calls=%d", elapsed, calls)
+	}
+}
+
+func TestReturnsAtOnceWhenAskedToWaitTooLong(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.Header().Set("Content-Type", "application/json")
+		writeJSON(w, 503, `{"success":false,"error":{"message":"later","details":{"retryAfterSeconds":900}}}`)
+	}))
+	defer srv.Close()
+
+	c, _ := New("hf_test", WithBaseURL(srv.URL), WithMaxRetries(3))
+	_, err := c.Scrape(context.Background(), "https://example.com", nil)
+	apiErr, ok := err.(*Error)
+	if !ok || apiErr.RetryAfter != 900 || calls != 1 {
+		t.Errorf("err=%v calls=%d", err, calls)
+	}
+}

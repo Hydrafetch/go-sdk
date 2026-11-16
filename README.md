@@ -250,7 +250,7 @@ if err != nil {
 		case apiErr.IsInvalidRequest():
 			return report(apiErr.Message)
 		case apiErr.IsRetryable():
-			return enqueue(url)
+			return enqueue(url, apiErr.RetryAfter)
 		}
 		log.Println(apiErr.Code, apiErr.Status, apiErr.RequestID)
 	}
@@ -264,8 +264,10 @@ if err != nil {
 | 401, 403 | invalid or missing key | no |
 | 402 | out of credits | no |
 | 404 | page does not exist | no |
-| 429 | rate limited | yes, twice with backoff |
-| 5xx | upstream failure | yes, twice with backoff |
+| 429 | rate limited | yes, twice |
+| 5xx | upstream failure | yes, twice |
+
+Retries wait as long as the response asks through `Retry-After` or `retryAfterSeconds`, and otherwise back off with jitter. When the response asks for more than 30 seconds the client does not wait; it returns the error at once and `apiErr.RetryAfter` holds the seconds to wait before asking again (zero when the response did not say). A dropped connection is retried too, including while the client follows a job.
 
 A 503 from `Scrape` means the origin is unreachable, usually a dead domain or a broken certificate.
 
