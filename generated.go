@@ -1084,6 +1084,11 @@ type BatchAcceptedDto struct {
 	// Example: 019f3c09-6fae-740f-9257-10c2b6af7f43
 	BatchID string `json:"batchId"`
 
+	// InvalidUrls Entries that were not valid http(s) URLs and were skipped. Absent when every URL was valid.
+	//
+	// Example: ["htps//example.com"]
+	InvalidUrls *[]string `json:"invalidUrls,omitempty"`
+
 	// Status The job has been accepted.
 	//
 	// Example: queued
@@ -1100,7 +1105,7 @@ type BatchRequestDto struct {
 	// ScrapeOptions How to scrape each URL. Same options as a single scrape.
 	ScrapeOptions *ScrapeOptionsDto `json:"scrapeOptions,omitempty"`
 
-	// Urls The explicit list of URLs to scrape. Each must be http(s).
+	// Urls The explicit list of URLs to scrape, each http(s). Malformed entries are skipped and returned in invalidUrls; the batch is refused only when none is valid.
 	//
 	// Example: ["https://example.com/a","https://example.com/b"]
 	Urls []string `json:"urls"`
@@ -1490,6 +1495,11 @@ type CrawlRequestDto struct {
 	//
 	// Example: false
 	AllowSubdomains *bool `json:"allowSubdomains,omitempty"`
+
+	// CrawlEntireDomain Crawl the whole site instead of only the section the starting URL is in. A crawl of /docs stays under /docs unless this is on or includePaths is set. Default off.
+	//
+	// Example: false
+	CrawlEntireDomain *bool `json:"crawlEntireDomain,omitempty"`
 
 	// ExcludePaths Skip URLs whose path matches any of these patterns.
 	//
@@ -2263,6 +2273,9 @@ type ScrapeFormatRequestDto struct {
 	// Method HTTP method to fetch the URL with. Use POST for endpoints that only answer a POST, such as JSON and GraphQL APIs. Defaults to GET.
 	Method *ScrapeFormatRequestDtoMethod `json:"method,omitempty"`
 
+	// Mobile Render the page as a phone would see it: a phone-sized screen, touch and a mobile browser identity. Use it for sites that serve different content to phones.
+	Mobile *bool `json:"mobile,omitempty"`
+
 	// OnlyMainContent Return only the main content, dropping nav/boilerplate. Default true.
 	OnlyMainContent *bool `json:"onlyMainContent,omitempty"`
 
@@ -2288,6 +2301,11 @@ type ScrapeFormatRequestDto struct {
 
 	// WaitFor Extra milliseconds to let the page settle before capture.
 	WaitFor *int `json:"waitFor,omitempty"`
+
+	// WaitForSelector A CSS selector to wait for before capture. The page is rendered in a browser and read once an element matching it exists, or when the time budget runs out, in which case the result says the element never appeared.
+	//
+	// Example: .price
+	WaitForSelector *string `json:"waitForSelector,omitempty"`
 }
 
 // ScrapeFormatRequestDtoMethod HTTP method to fetch the URL with. Use POST for endpoints that only answer a POST, such as JSON and GraphQL APIs. Defaults to GET.
@@ -2325,6 +2343,9 @@ type ScrapeOptionsDto struct {
 	// MaxAge Serve a page from cache if younger than this many milliseconds.
 	MaxAge *int `json:"maxAge,omitempty"`
 
+	// Mobile Render the page as a phone would see it: a phone-sized screen, touch and a mobile browser identity. Use it for sites that serve different content to phones.
+	Mobile *bool `json:"mobile,omitempty"`
+
 	// OnlyMainContent Return only the main content, dropping boilerplate. Default true.
 	OnlyMainContent *bool `json:"onlyMainContent,omitempty"`
 
@@ -2342,6 +2363,11 @@ type ScrapeOptionsDto struct {
 
 	// WaitFor Extra milliseconds to let the page settle before capture.
 	WaitFor *int `json:"waitFor,omitempty"`
+
+	// WaitForSelector A CSS selector to wait for before capture. The page is rendered in a browser and read once an element matching it exists, or when the time budget runs out, in which case the result says the element never appeared.
+	//
+	// Example: .price
+	WaitForSelector *string `json:"waitForSelector,omitempty"`
 }
 
 // ScrapeOptionsDtoFormats defines model for ScrapeOptionsDto.Formats.
@@ -2400,6 +2426,9 @@ type ScrapeRequestDto struct {
 	// Method HTTP method to fetch the URL with. Use POST for endpoints that only answer a POST, such as JSON and GraphQL APIs. Defaults to GET.
 	Method *ScrapeRequestDtoMethod `json:"method,omitempty"`
 
+	// Mobile Render the page as a phone would see it: a phone-sized screen, touch and a mobile browser identity. Use it for sites that serve different content to phones.
+	Mobile *bool `json:"mobile,omitempty"`
+
 	// OnlyMainContent Return only the main content, dropping nav/boilerplate. Default true.
 	OnlyMainContent *bool `json:"onlyMainContent,omitempty"`
 
@@ -2425,6 +2454,11 @@ type ScrapeRequestDto struct {
 
 	// WaitFor Extra milliseconds to let the page settle before capture.
 	WaitFor *float32 `json:"waitFor,omitempty"`
+
+	// WaitForSelector A CSS selector to wait for before capture. The page is rendered in a browser and read once an element matching it exists, or when the time budget runs out, in which case the result says the element never appeared.
+	//
+	// Example: .price
+	WaitForSelector *string `json:"waitForSelector,omitempty"`
 }
 
 // ScrapeRequestDtoFormats defines model for ScrapeRequestDto.Formats.
