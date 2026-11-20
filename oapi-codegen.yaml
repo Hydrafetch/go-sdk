@@ -4,6 +4,17 @@ generate:
 output: generated.go
 output-options:
   skip-prune: true
+  exclude-schemas:
+    - CreateMonitorDto
+    - UpdateMonitorDto
+    - MonitorResponseDto
+    - MonitorEnvelopeDto
+    - MonitorListDto
+    - MonitorChangeDto
+    - MonitorCheckResponseDto
+    - MonitorCheckEnvelopeDto
+  exclude-tags:
+    - Monitors
   name-normalizer: ToCamelCaseWithInitialisms
   type-mapping:
     string:

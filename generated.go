@@ -369,6 +369,300 @@ func (e MapRequestDtoSitemap) Valid() bool {
 	}
 }
 
+// Defines values for MonitorCheckSummaryDtoStatus.
+const (
+	MonitorCheckSummaryDtoStatusCompleted        MonitorCheckSummaryDtoStatus = "completed"
+	MonitorCheckSummaryDtoStatusFailed           MonitorCheckSummaryDtoStatus = "failed"
+	MonitorCheckSummaryDtoStatusPartial          MonitorCheckSummaryDtoStatus = "partial"
+	MonitorCheckSummaryDtoStatusRunning          MonitorCheckSummaryDtoStatus = "running"
+	MonitorCheckSummaryDtoStatusSkippedNoCredits MonitorCheckSummaryDtoStatus = "skipped_no_credits"
+	MonitorCheckSummaryDtoStatusSkippedOverlap   MonitorCheckSummaryDtoStatus = "skipped_overlap"
+)
+
+// Valid indicates whether the value is a known member of the MonitorCheckSummaryDtoStatus enum.
+func (e MonitorCheckSummaryDtoStatus) Valid() bool {
+	switch e {
+	case MonitorCheckSummaryDtoStatusCompleted:
+		return true
+	case MonitorCheckSummaryDtoStatusFailed:
+		return true
+	case MonitorCheckSummaryDtoStatusPartial:
+		return true
+	case MonitorCheckSummaryDtoStatusRunning:
+		return true
+	case MonitorCheckSummaryDtoStatusSkippedNoCredits:
+		return true
+	case MonitorCheckSummaryDtoStatusSkippedOverlap:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorCheckSummaryDtoTrigger.
+const (
+	Manual    MonitorCheckSummaryDtoTrigger = "manual"
+	Scheduled MonitorCheckSummaryDtoTrigger = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the MonitorCheckSummaryDtoTrigger enum.
+func (e MonitorCheckSummaryDtoTrigger) Valid() bool {
+	switch e {
+	case Manual:
+		return true
+	case Scheduled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorPagesTargetDtoType.
+const (
+	MonitorPagesTargetDtoTypePages MonitorPagesTargetDtoType = "pages"
+)
+
+// Valid indicates whether the value is a known member of the MonitorPagesTargetDtoType enum.
+func (e MonitorPagesTargetDtoType) Valid() bool {
+	switch e {
+	case MonitorPagesTargetDtoTypePages:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorPagesTargetResponseDtoType.
+const (
+	MonitorPagesTargetResponseDtoTypePages MonitorPagesTargetResponseDtoType = "pages"
+)
+
+// Valid indicates whether the value is a known member of the MonitorPagesTargetResponseDtoType enum.
+func (e MonitorPagesTargetResponseDtoType) Valid() bool {
+	switch e {
+	case MonitorPagesTargetResponseDtoTypePages:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorScheduleDtoEvery.
+const (
+	MonitorScheduleDtoEveryN12H MonitorScheduleDtoEvery = "12h"
+	MonitorScheduleDtoEveryN15M MonitorScheduleDtoEvery = "15m"
+	MonitorScheduleDtoEveryN1D  MonitorScheduleDtoEvery = "1d"
+	MonitorScheduleDtoEveryN1H  MonitorScheduleDtoEvery = "1h"
+	MonitorScheduleDtoEveryN2H  MonitorScheduleDtoEvery = "2h"
+	MonitorScheduleDtoEveryN30M MonitorScheduleDtoEvery = "30m"
+	MonitorScheduleDtoEveryN6H  MonitorScheduleDtoEvery = "6h"
+	MonitorScheduleDtoEveryN7D  MonitorScheduleDtoEvery = "7d"
+)
+
+// Valid indicates whether the value is a known member of the MonitorScheduleDtoEvery enum.
+func (e MonitorScheduleDtoEvery) Valid() bool {
+	switch e {
+	case MonitorScheduleDtoEveryN12H:
+		return true
+	case MonitorScheduleDtoEveryN15M:
+		return true
+	case MonitorScheduleDtoEveryN1D:
+		return true
+	case MonitorScheduleDtoEveryN1H:
+		return true
+	case MonitorScheduleDtoEveryN2H:
+		return true
+	case MonitorScheduleDtoEveryN30M:
+		return true
+	case MonitorScheduleDtoEveryN6H:
+		return true
+	case MonitorScheduleDtoEveryN7D:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorScheduleResponseDtoEvery.
+const (
+	MonitorScheduleResponseDtoEveryN12H MonitorScheduleResponseDtoEvery = "12h"
+	MonitorScheduleResponseDtoEveryN15M MonitorScheduleResponseDtoEvery = "15m"
+	MonitorScheduleResponseDtoEveryN1D  MonitorScheduleResponseDtoEvery = "1d"
+	MonitorScheduleResponseDtoEveryN1H  MonitorScheduleResponseDtoEvery = "1h"
+	MonitorScheduleResponseDtoEveryN2H  MonitorScheduleResponseDtoEvery = "2h"
+	MonitorScheduleResponseDtoEveryN30M MonitorScheduleResponseDtoEvery = "30m"
+	MonitorScheduleResponseDtoEveryN6H  MonitorScheduleResponseDtoEvery = "6h"
+	MonitorScheduleResponseDtoEveryN7D  MonitorScheduleResponseDtoEvery = "7d"
+)
+
+// Valid indicates whether the value is a known member of the MonitorScheduleResponseDtoEvery enum.
+func (e MonitorScheduleResponseDtoEvery) Valid() bool {
+	switch e {
+	case MonitorScheduleResponseDtoEveryN12H:
+		return true
+	case MonitorScheduleResponseDtoEveryN15M:
+		return true
+	case MonitorScheduleResponseDtoEveryN1D:
+		return true
+	case MonitorScheduleResponseDtoEveryN1H:
+		return true
+	case MonitorScheduleResponseDtoEveryN2H:
+		return true
+	case MonitorScheduleResponseDtoEveryN30M:
+		return true
+	case MonitorScheduleResponseDtoEveryN6H:
+		return true
+	case MonitorScheduleResponseDtoEveryN7D:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSearchTargetDtoTimeRange.
+const (
+	MonitorSearchTargetDtoTimeRangeDay   MonitorSearchTargetDtoTimeRange = "day"
+	MonitorSearchTargetDtoTimeRangeMonth MonitorSearchTargetDtoTimeRange = "month"
+	MonitorSearchTargetDtoTimeRangeWeek  MonitorSearchTargetDtoTimeRange = "week"
+	MonitorSearchTargetDtoTimeRangeYear  MonitorSearchTargetDtoTimeRange = "year"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSearchTargetDtoTimeRange enum.
+func (e MonitorSearchTargetDtoTimeRange) Valid() bool {
+	switch e {
+	case MonitorSearchTargetDtoTimeRangeDay:
+		return true
+	case MonitorSearchTargetDtoTimeRangeMonth:
+		return true
+	case MonitorSearchTargetDtoTimeRangeWeek:
+		return true
+	case MonitorSearchTargetDtoTimeRangeYear:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSearchTargetDtoType.
+const (
+	MonitorSearchTargetDtoTypeSearch MonitorSearchTargetDtoType = "search"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSearchTargetDtoType enum.
+func (e MonitorSearchTargetDtoType) Valid() bool {
+	switch e {
+	case MonitorSearchTargetDtoTypeSearch:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSearchTargetResponseDtoTimeRange.
+const (
+	MonitorSearchTargetResponseDtoTimeRangeDay   MonitorSearchTargetResponseDtoTimeRange = "day"
+	MonitorSearchTargetResponseDtoTimeRangeMonth MonitorSearchTargetResponseDtoTimeRange = "month"
+	MonitorSearchTargetResponseDtoTimeRangeWeek  MonitorSearchTargetResponseDtoTimeRange = "week"
+	MonitorSearchTargetResponseDtoTimeRangeYear  MonitorSearchTargetResponseDtoTimeRange = "year"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSearchTargetResponseDtoTimeRange enum.
+func (e MonitorSearchTargetResponseDtoTimeRange) Valid() bool {
+	switch e {
+	case MonitorSearchTargetResponseDtoTimeRangeDay:
+		return true
+	case MonitorSearchTargetResponseDtoTimeRangeMonth:
+		return true
+	case MonitorSearchTargetResponseDtoTimeRangeWeek:
+		return true
+	case MonitorSearchTargetResponseDtoTimeRangeYear:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSearchTargetResponseDtoType.
+const (
+	MonitorSearchTargetResponseDtoTypeSearch MonitorSearchTargetResponseDtoType = "search"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSearchTargetResponseDtoType enum.
+func (e MonitorSearchTargetResponseDtoType) Valid() bool {
+	switch e {
+	case MonitorSearchTargetResponseDtoTypeSearch:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSiteTargetDtoType.
+const (
+	MonitorSiteTargetDtoTypeSite MonitorSiteTargetDtoType = "site"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSiteTargetDtoType enum.
+func (e MonitorSiteTargetDtoType) Valid() bool {
+	switch e {
+	case MonitorSiteTargetDtoTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorSiteTargetResponseDtoType.
+const (
+	MonitorSiteTargetResponseDtoTypeSite MonitorSiteTargetResponseDtoType = "site"
+)
+
+// Valid indicates whether the value is a known member of the MonitorSiteTargetResponseDtoType enum.
+func (e MonitorSiteTargetResponseDtoType) Valid() bool {
+	switch e {
+	case MonitorSiteTargetResponseDtoTypeSite:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorWebhookDtoEvents.
+const (
+	MonitorWebhookDtoEventsChange    MonitorWebhookDtoEvents = "change"
+	MonitorWebhookDtoEventsCompleted MonitorWebhookDtoEvents = "completed"
+)
+
+// Valid indicates whether the value is a known member of the MonitorWebhookDtoEvents enum.
+func (e MonitorWebhookDtoEvents) Valid() bool {
+	switch e {
+	case MonitorWebhookDtoEventsChange:
+		return true
+	case MonitorWebhookDtoEventsCompleted:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MonitorWebhookResponseDtoEvents.
+const (
+	MonitorWebhookResponseDtoEventsChange    MonitorWebhookResponseDtoEvents = "change"
+	MonitorWebhookResponseDtoEventsCompleted MonitorWebhookResponseDtoEvents = "completed"
+)
+
+// Valid indicates whether the value is a known member of the MonitorWebhookResponseDtoEvents enum.
+func (e MonitorWebhookResponseDtoEvents) Valid() bool {
+	switch e {
+	case MonitorWebhookResponseDtoEventsChange:
+		return true
+	case MonitorWebhookResponseDtoEventsCompleted:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for NewsRequestDtoTimeRange.
 const (
 	NewsRequestDtoTimeRangeDay   NewsRequestDtoTimeRange = "day"
@@ -2083,6 +2377,358 @@ type MergedEntityDto struct {
 	Sources []string `json:"sources"`
 }
 
+// MonitorCheckListDto defines model for MonitorCheckListDto.
+type MonitorCheckListDto struct {
+	Data []MonitorCheckSummaryDto `json:"data"`
+}
+
+// MonitorCheckSummaryDto defines model for MonitorCheckSummaryDto.
+type MonitorCheckSummaryDto struct {
+	Changed     float32 `json:"changed"`
+	CreditsUsed float32 `json:"creditsUsed"`
+
+	// Error Pages we could not read this time. Never counted as a change.
+	Error      float32                      `json:"error"`
+	FinishedAt *string                      `json:"finishedAt"`
+	ID         string                       `json:"id"`
+	New        float32                      `json:"new"`
+	Removed    float32                      `json:"removed"`
+	Same       float32                      `json:"same"`
+	StartedAt  string                       `json:"startedAt"`
+	Status     MonitorCheckSummaryDtoStatus `json:"status"`
+
+	// TotalPages Pages this check reads.
+	TotalPages float32                       `json:"totalPages"`
+	Trigger    MonitorCheckSummaryDtoTrigger `json:"trigger"`
+}
+
+// MonitorCheckSummaryDtoStatus defines model for MonitorCheckSummaryDto.Status.
+type MonitorCheckSummaryDtoStatus string
+
+// MonitorCheckSummaryDtoTrigger defines model for MonitorCheckSummaryDto.Trigger.
+type MonitorCheckSummaryDtoTrigger string
+
+// MonitorFieldChangeDto defines model for MonitorFieldChangeDto.
+type MonitorFieldChangeDto struct {
+	Current *string `json:"current"`
+
+	// Field Example: Product.offers.price
+	Field    string  `json:"field"`
+	Previous *string `json:"previous"`
+}
+
+// MonitorJudgeDto defines model for MonitorJudgeDto.
+type MonitorJudgeDto struct {
+	// Match Whether the change matched the target's goal.
+	Match bool `json:"match"`
+
+	// Reason One sentence on what in the change decided it.
+	Reason string `json:"reason"`
+}
+
+// MonitorPagesTargetDto defines model for MonitorPagesTargetDto.
+type MonitorPagesTargetDto struct {
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: the Pro plan price drops below $50 a month
+	Goal *string `json:"goal,omitempty"`
+
+	// Ignore Lines to leave out before comparing. Plain text matches anywhere in a line, ignoring case; wrap a pattern in slashes for a regular expression.
+	//
+	// Example: ["Last updated","/^Visitors: \\d+$/"]
+	Ignore *[]string `json:"ignore,omitempty"`
+
+	// ScrapeOptions How each page is read. The same options as a scrape; formats are chosen by the monitor.
+	ScrapeOptions *ScrapeOptionsDto `json:"scrapeOptions,omitempty"`
+
+	// Selector CSS selectors. Only the content inside them is compared, the rest of the page is ignored.
+	//
+	// Example: ["#pricing",".plan-card"]
+	Selector *[]string `json:"selector,omitempty"`
+
+	// TriggerOn Only alert when an added or removed line contains one of these. Plain text or a regular expression in slashes. Every change is still kept in the history.
+	//
+	// Example: ["price","/sold out/i"]
+	TriggerOn *[]string `json:"triggerOn,omitempty"`
+
+	// Type Watch a list of pages for changes to their content.
+	Type MonitorPagesTargetDtoType `json:"type"`
+
+	// Urls The pages to watch, up to 50.
+	//
+	// Example: ["https://example.com/pricing"]
+	Urls []string `json:"urls"`
+}
+
+// MonitorPagesTargetDtoType Watch a list of pages for changes to their content.
+type MonitorPagesTargetDtoType string
+
+// MonitorPagesTargetResponseDto defines model for MonitorPagesTargetResponseDto.
+type MonitorPagesTargetResponseDto struct {
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: the Pro plan price drops below $50 a month
+	Goal *string `json:"goal,omitempty"`
+
+	// ID Stable id of this target within the monitor.
+	ID string `json:"id"`
+
+	// Ignore Lines to leave out before comparing. Plain text matches anywhere in a line, ignoring case; wrap a pattern in slashes for a regular expression.
+	//
+	// Example: ["Last updated","/^Visitors: \\d+$/"]
+	Ignore *[]string `json:"ignore,omitempty"`
+
+	// ScrapeOptions How each page is read. The same options as a scrape; formats are chosen by the monitor.
+	ScrapeOptions *ScrapeOptionsDto `json:"scrapeOptions,omitempty"`
+
+	// Selector CSS selectors. Only the content inside them is compared, the rest of the page is ignored.
+	//
+	// Example: ["#pricing",".plan-card"]
+	Selector *[]string `json:"selector,omitempty"`
+
+	// TriggerOn Only alert when an added or removed line contains one of these. Plain text or a regular expression in slashes. Every change is still kept in the history.
+	//
+	// Example: ["price","/sold out/i"]
+	TriggerOn *[]string `json:"triggerOn,omitempty"`
+
+	// Type Watch a list of pages for changes to their content.
+	Type MonitorPagesTargetResponseDtoType `json:"type"`
+
+	// Urls The pages to watch, up to 50.
+	//
+	// Example: ["https://example.com/pricing"]
+	Urls []string `json:"urls"`
+}
+
+// MonitorPagesTargetResponseDtoType Watch a list of pages for changes to their content.
+type MonitorPagesTargetResponseDtoType string
+
+// MonitorScheduleDto defines model for MonitorScheduleDto.
+type MonitorScheduleDto struct {
+	// Every How often to check. The shortest is every 15 minutes.
+	//
+	// Example: 1h
+	Every MonitorScheduleDtoEvery `json:"every"`
+}
+
+// MonitorScheduleDtoEvery How often to check. The shortest is every 15 minutes.
+//
+// Example: 1h
+type MonitorScheduleDtoEvery string
+
+// MonitorScheduleResponseDto defines model for MonitorScheduleResponseDto.
+type MonitorScheduleResponseDto struct {
+	Every MonitorScheduleResponseDtoEvery `json:"every"`
+}
+
+// MonitorScheduleResponseDtoEvery defines model for MonitorScheduleResponseDto.Every.
+type MonitorScheduleResponseDtoEvery string
+
+// MonitorSearchTargetDto defines model for MonitorSearchTargetDto.
+type MonitorSearchTargetDto struct {
+	// Country ISO 3166 alpha-2 country code to bias results toward a region.
+	//
+	// Example: us
+	Country *string `json:"country,omitempty"`
+
+	// ExcludeDomains Drop results from these domains.
+	//
+	// Example: ["pinterest.com"]
+	ExcludeDomains *[]string `json:"excludeDomains,omitempty"`
+
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: news about the company being acquired
+	Goal *string `json:"goal,omitempty"`
+
+	// IncludeDomains Only return results from these domains.
+	//
+	// Example: ["github.com","arxiv.org"]
+	IncludeDomains *[]string `json:"includeDomains,omitempty"`
+
+	// Limit How many top results to look at each time.
+	Limit *int `json:"limit,omitempty"`
+
+	// Query What to search the web for.
+	//
+	// Example: best open source vector databases
+	Query string `json:"query"`
+
+	// TimeRange Restrict results to a recency window relative to now.
+	//
+	// Example: week
+	TimeRange *MonitorSearchTargetDtoTimeRange `json:"timeRange,omitempty"`
+
+	// Type Run a search on a schedule and report results it has never returned before. Checks at most once an hour.
+	Type MonitorSearchTargetDtoType `json:"type"`
+}
+
+// MonitorSearchTargetDtoTimeRange Restrict results to a recency window relative to now.
+//
+// Example: week
+type MonitorSearchTargetDtoTimeRange string
+
+// MonitorSearchTargetDtoType Run a search on a schedule and report results it has never returned before. Checks at most once an hour.
+type MonitorSearchTargetDtoType string
+
+// MonitorSearchTargetResponseDto defines model for MonitorSearchTargetResponseDto.
+type MonitorSearchTargetResponseDto struct {
+	// Country ISO 3166 alpha-2 country code to bias results toward a region.
+	//
+	// Example: us
+	Country *string `json:"country,omitempty"`
+
+	// ExcludeDomains Drop results from these domains.
+	//
+	// Example: ["pinterest.com"]
+	ExcludeDomains *[]string `json:"excludeDomains,omitempty"`
+
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: news about the company being acquired
+	Goal *string `json:"goal,omitempty"`
+
+	// ID Stable id of this target within the monitor.
+	ID string `json:"id"`
+
+	// IncludeDomains Only return results from these domains.
+	//
+	// Example: ["github.com","arxiv.org"]
+	IncludeDomains *[]string `json:"includeDomains,omitempty"`
+
+	// Limit How many top results to look at each time.
+	Limit *float32 `json:"limit,omitempty"`
+
+	// Query What to search the web for.
+	//
+	// Example: best open source vector databases
+	Query string `json:"query"`
+
+	// TimeRange Restrict results to a recency window relative to now.
+	//
+	// Example: week
+	TimeRange *MonitorSearchTargetResponseDtoTimeRange `json:"timeRange,omitempty"`
+
+	// Type Run a search on a schedule and report results it has never returned before. Checks at most once an hour.
+	Type MonitorSearchTargetResponseDtoType `json:"type"`
+}
+
+// MonitorSearchTargetResponseDtoTimeRange Restrict results to a recency window relative to now.
+//
+// Example: week
+type MonitorSearchTargetResponseDtoTimeRange string
+
+// MonitorSearchTargetResponseDtoType Run a search on a schedule and report results it has never returned before. Checks at most once an hour.
+type MonitorSearchTargetResponseDtoType string
+
+// MonitorSiteTargetDto defines model for MonitorSiteTargetDto.
+type MonitorSiteTargetDto struct {
+	// ExcludePaths Leave out pages whose path matches one of these patterns.
+	//
+	// Example: ["^/blog/tag/.*"]
+	ExcludePaths *[]string `json:"excludePaths,omitempty"`
+
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: new senior backend roles
+	Goal *string `json:"goal,omitempty"`
+
+	// IncludePaths Only count pages whose path matches one of these patterns.
+	//
+	// Example: ["^/blog/.*"]
+	IncludePaths *[]string `json:"includePaths,omitempty"`
+
+	// Limit The most pages to track. When a site has more, new pages are still found but none are reported as removed.
+	Limit *int `json:"limit,omitempty"`
+
+	// ReadNewPages Read each new page once for its title and opening lines, up to 20 a check, at one credit each. Off reports the address only.
+	ReadNewPages *bool `json:"readNewPages,omitempty"`
+
+	// Type Watch a whole site for pages that appear or disappear. Each new page is read once for its title and opening lines.
+	Type MonitorSiteTargetDtoType `json:"type"`
+
+	// URL Where the site starts.
+	//
+	// Example: https://example.com/blog
+	URL string `json:"url"`
+}
+
+// MonitorSiteTargetDtoType Watch a whole site for pages that appear or disappear. Each new page is read once for its title and opening lines.
+type MonitorSiteTargetDtoType string
+
+// MonitorSiteTargetResponseDto defines model for MonitorSiteTargetResponseDto.
+type MonitorSiteTargetResponseDto struct {
+	// ExcludePaths Leave out pages whose path matches one of these patterns.
+	//
+	// Example: ["^/blog/tag/.*"]
+	ExcludePaths *[]string `json:"excludePaths,omitempty"`
+
+	// Goal What you are watching for, in plain words. Each change is checked against it and only alerts when it matches; every change is still kept in the history with the verdict. One extra credit per change checked.
+	//
+	// Example: new senior backend roles
+	Goal *string `json:"goal,omitempty"`
+
+	// ID Stable id of this target within the monitor.
+	ID string `json:"id"`
+
+	// IncludePaths Only count pages whose path matches one of these patterns.
+	//
+	// Example: ["^/blog/.*"]
+	IncludePaths *[]string `json:"includePaths,omitempty"`
+
+	// Limit The most pages to track. When a site has more, new pages are still found but none are reported as removed.
+	Limit *float32 `json:"limit,omitempty"`
+
+	// ReadNewPages Read each new page once for its title and opening lines, up to 20 a check, at one credit each. Off reports the address only.
+	ReadNewPages *bool `json:"readNewPages,omitempty"`
+
+	// Type Watch a whole site for pages that appear or disappear. Each new page is read once for its title and opening lines.
+	Type MonitorSiteTargetResponseDtoType `json:"type"`
+
+	// URL Where the site starts.
+	//
+	// Example: https://example.com/blog
+	URL string `json:"url"`
+}
+
+// MonitorSiteTargetResponseDtoType Watch a whole site for pages that appear or disappear. Each new page is read once for its title and opening lines.
+type MonitorSiteTargetResponseDtoType string
+
+// MonitorWebhookDto defines model for MonitorWebhookDto.
+type MonitorWebhookDto struct {
+	// Events `change` fires for each page that changed, appeared, or was removed; `completed` fires once per check with the counts. Defaults to both.
+	//
+	// Example: ["change","completed"]
+	Events *[]MonitorWebhookDtoEvents `json:"events,omitempty"`
+
+	// Headers Extra headers to send with each callback, e.g. for authentication.
+	//
+	// Example: {"Authorization":"Bearer your-token"}
+	Headers *map[string]string `json:"headers,omitempty"`
+
+	// Secret A shared secret. When set, each callback carries an X-Hydrafetch-Signature header you can verify to prove the request came from us and is not a replay.
+	//
+	// Example: whsec_a_long_random_string
+	Secret *string `json:"secret,omitempty"`
+
+	// URL The URL to POST events to. Must be a public http(s) URL; private, loopback, and link-local addresses are rejected.
+	//
+	// Example: https://your-app.com/hooks/hydrafetch
+	URL string `json:"url"`
+}
+
+// MonitorWebhookDtoEvents defines model for MonitorWebhookDto.Events.
+type MonitorWebhookDtoEvents string
+
+// MonitorWebhookResponseDto defines model for MonitorWebhookResponseDto.
+type MonitorWebhookResponseDto struct {
+	Events []MonitorWebhookResponseDtoEvents `json:"events"`
+	URL    string                            `json:"url"`
+}
+
+// MonitorWebhookResponseDtoEvents defines model for MonitorWebhookResponseDto.Events.
+type MonitorWebhookResponseDtoEvents string
+
 // NewsRequestDto defines model for NewsRequestDto.
 type NewsRequestDto struct {
 	// Country ISO 3166 alpha-2 country code to lean results toward that edition.
@@ -3555,7 +4201,7 @@ type WebhookDto struct {
 	// Example: whsec_a_long_random_string
 	Secret *string `json:"secret,omitempty"`
 
-	// URL The URL to POST events to. Must be a public http(s) URL — private, loopback, and link-local addresses are rejected.
+	// URL The URL to POST events to. Must be a public http(s) URL; private, loopback, and link-local addresses are rejected.
 	//
 	// Example: https://your-app.com/hooks/hydrafetch
 	URL string `json:"url"`
