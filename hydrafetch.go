@@ -599,6 +599,88 @@ func (c *Client) CancelBatch(ctx context.Context, id string) (*Job, error) {
 	return c.jobCall(ctx, http.MethodDelete, "/v1/web/batch/"+url.PathEscape(id))
 }
 
+func monitorPath(id string, rest ...string) string {
+	path := "/v1/web/monitors/" + url.PathEscape(id)
+	for _, part := range rest {
+		path += "/" + url.PathEscape(part)
+	}
+	return path
+}
+
+func (p *MonitorPage) query() url.Values {
+	q := url.Values{}
+	if p == nil {
+		return q
+	}
+	if p.Limit > 0 {
+		q.Set("limit", strconv.Itoa(p.Limit))
+	}
+	if p.Offset > 0 {
+		q.Set("offset", strconv.Itoa(p.Offset))
+	}
+	return q
+}
+
+func (c *Client) CreateMonitor(ctx context.Context, input MonitorInput) (*Monitor, error) {
+	var out Monitor
+	if err := c.do(ctx, http.MethodPost, "/v1/web/monitors", input, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) ListMonitors(ctx context.Context, page *MonitorPage) ([]Monitor, error) {
+	var out []Monitor
+	if err := c.do(ctx, http.MethodGet, "/v1/web/monitors", nil, page.query(), &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *Client) GetMonitor(ctx context.Context, id string) (*Monitor, error) {
+	var out Monitor
+	if err := c.do(ctx, http.MethodGet, monitorPath(id), nil, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) UpdateMonitor(ctx context.Context, id string, changes MonitorChanges) (*Monitor, error) {
+	var out Monitor
+	if err := c.do(ctx, http.MethodPatch, monitorPath(id), changes, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) DeleteMonitor(ctx context.Context, id string) error {
+	return c.do(ctx, http.MethodDelete, monitorPath(id), nil, nil, nil)
+}
+
+func (c *Client) RunMonitor(ctx context.Context, id string) (*MonitorCheckSummary, error) {
+	var out MonitorCheckSummary
+	if err := c.do(ctx, http.MethodPost, monitorPath(id, "run"), nil, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) ListMonitorChecks(ctx context.Context, id string, page *MonitorPage) ([]MonitorCheckSummary, error) {
+	var out []MonitorCheckSummary
+	if err := c.do(ctx, http.MethodGet, monitorPath(id, "checks"), nil, page.query(), &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *Client) GetMonitorCheck(ctx context.Context, id, checkID string) (*MonitorCheck, error) {
+	var out MonitorCheck
+	if err := c.do(ctx, http.MethodGet, monitorPath(id, "checks", checkID), nil, nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *Client) jobStatus(ctx context.Context, path string) (*Job, error) {
 	return c.jobCall(ctx, http.MethodGet, path)
 }

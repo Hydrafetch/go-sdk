@@ -636,3 +636,93 @@ func TestReusesOneIdempotencyKeyAcrossRetries(t *testing.T) {
 		t.Errorf("keys = %v", keys)
 	}
 }
+
+func TestCreateMonitorSendsFlatTargetsAsTheAPINamesThem(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 201, `{"success":true,"data":{"id":"mon_1","targets":[{"id":"t1","type":"site","url":"https://acme.com/blog","readNewPages":true}]}}`)
+	})
+	readNew := true
+	m, err := c.CreateMonitor(context.Background(), MonitorInput{
+		Name:     "Competitors",
+		Schedule: MonitorSchedule{Every: "1h"},
+		Targets: []MonitorTarget{
+			{Type: "pages", URLs: []string{"https://acme.com/pricing"}, Goal: "a plan gets cheaper"},
+			{Type: "site", URL: "https://acme.com/blog", ReadNewPages: &readNew},
+			{Type: "search", Query: "acme funding"},
+		},
+		Email: "daily",
+	})
+	if err != nil {
+		t.Fatalf("CreateMonitor: %v", err)
+	}
+	if cap.requests[0].Method+" "+cap.requests[0].URL.Path != "POST /v1/web/monitors" {
+		t.Fatalf("sent %s %s", cap.requests[0].Method, cap.requests[0].URL.Path)
+	}
+	body := cap.bodies[0]
+	targets := body["targets"].([]any)
+	got := []string{
+		targets[0].(map[string]any)["type"].(string), targets[0].(map[string]any)["goal"].(string),
+		targets[1].(map[string]any)["url"].(string), targets[2].(map[string]any)["query"].(string),
+		body["schedule"].(map[string]any)["every"].(string), body["email"].(string),
+		m.Targets[0].Type, m.Targets[0].URL,
+	}
+	want := []string{"pages", "a plan gets cheaper", "https://acme.com/blog", "acme funding", "1h", "daily", "site", "https://acme.com/blog"}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("got %v, want %v", got, want)
+	}
+	if _, has := targets[2].(map[string]any)["urls"]; has {
+		t.Errorf("a search target carried an empty urls field: %v", targets[2])
+	}
+}
+
+func TestMonitorRoutes(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if strings.HasSuffix(r.URL.Path, "/monitors") || strings.HasSuffix(r.URL.Path, "/checks") {
+			writeJSON(w, 200, `{"success":true,"data":[]}`)
+			return
+		}
+		writeJSON(w, 200, `{"success":true,"data":{"id":"x","status":"completed","changes":[{"url":"u","status":"new","judge":{"match":true,"reason":"r"}}]}}`)
+	})
+	ctx := context.Background()
+	if _, err := c.ListMonitors(ctx, &MonitorPage{Limit: 10, Offset: 20}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.UpdateMonitor(ctx, "mon_1", MonitorChanges{Status: "paused"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.RunMonitor(ctx, "mon_1"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.ListMonitorChecks(ctx, "mon_1", &MonitorPage{Limit: 5}); err != nil {
+		t.Fatal(err)
+	}
+	check, err := c.GetMonitorCheck(ctx, "mon_1", "chk 1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := c.DeleteMonitor(ctx, "mon_1"); err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, r := range cap.requests {
+		got = append(got, r.Method+" "+r.URL.EscapedPath()+"?"+r.URL.RawQuery)
+	}
+	want := []string{
+		"GET /v1/web/monitors?limit=10&offset=20",
+		"PATCH /v1/web/monitors/mon_1?",
+		"POST /v1/web/monitors/mon_1/run?",
+		"GET /v1/web/monitors/mon_1/checks?limit=5",
+		"GET /v1/web/monitors/mon_1/checks/chk%201?",
+		"DELETE /v1/web/monitors/mon_1?",
+	}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("got %v, want %v", got, want)
+	}
+	if check.Changes[0].Status != "new" || !check.Changes[0].Judge.Match {
+		t.Errorf("check decoded as %+v", check.Changes[0])
+	}
+}

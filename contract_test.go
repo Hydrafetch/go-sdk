@@ -84,3 +84,26 @@ func TestOptionsMatchTheAPI(t *testing.T) {
 		}
 	}
 }
+
+func TestMonitorTargetCoversEveryTargetType(t *testing.T) {
+	ours := jsonFields(MonitorTarget{})
+	allowed := map[string]bool{"id": true}
+	for _, dto := range []any{MonitorPagesTargetDto{}, MonitorSiteTargetDto{}, MonitorSearchTargetDto{}} {
+		for name, kind := range jsonFields(dto) {
+			allowed[name] = true
+			got, ok := ours[name]
+			if !ok {
+				t.Errorf("MonitorTarget has no %q, which %T accepts", name, dto)
+				continue
+			}
+			if got != kind {
+				t.Errorf("MonitorTarget.%s is %s, the API takes %s", name, got, kind)
+			}
+		}
+	}
+	for name := range ours {
+		if !allowed[name] {
+			t.Errorf("MonitorTarget.%s is not a field of any target type", name)
+		}
+	}
+}

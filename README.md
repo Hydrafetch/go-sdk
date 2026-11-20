@@ -201,6 +201,40 @@ fmt.Println(changes[0].Totals) // {Open:42 Opened:6 Closed:3}
 
 A search costs 1 credit per 10 jobs returned, and an empty one is free. Hiring changes cost 1 credit per company we have jobs for; companies we do not track yet come back empty and are free.
 
+## Monitors
+
+Watch pages, a whole site or a search on a schedule and hear about what changed. Monitors are available on paid plans.
+
+```go
+m, err := hf.CreateMonitor(ctx, hydrafetch.MonitorInput{
+	Name:     "Competitors",
+	Schedule: hydrafetch.MonitorSchedule{Every: "1h"},
+	Targets: []hydrafetch.MonitorTarget{
+		{Type: "pages", URLs: []string{"https://acme.com/pricing"}, Goal: "a plan gets cheaper"},
+		{Type: "site", URL: "https://acme.com/blog"},
+		{Type: "search", Query: "acme funding"},
+	},
+	Webhook: &hydrafetch.MonitorWebhook{URL: "https://your-app.com/hooks/hydrafetch"},
+})
+```
+
+A pages target reports text that changed, as a line diff, plus fields such as price and availability. A site target reports pages that appear or go away, with each new page's title and opening lines. A search target reports results it has never returned before. With a `Goal`, a change only alerts when it matches, and every change keeps the verdict and a one-sentence reason.
+
+Checks run in the background. Your webhook receives `monitor.change` for each change and `monitor.check.completed` once a check ends, or read them yourself:
+
+```go
+checks, _ := hf.ListMonitorChecks(ctx, m.ID, &hydrafetch.MonitorPage{Limit: 1})
+check, _ := hf.GetMonitorCheck(ctx, m.ID, checks[0].ID)
+for _, c := range check.Changes {
+	fmt.Println(c.Status, c.URL)
+}
+
+hf.RunMonitor(ctx, m.ID) // check now, outside the schedule
+hf.UpdateMonitor(ctx, m.ID, hydrafetch.MonitorChanges{Status: "paused"})
+```
+
+A page read costs 1 credit, a site costs 1 per check plus 1 per new page read, and a search costs 1 per check. A goal adds 1 credit per change it checks. Pages that cannot be read are not charged.
+
 ## Brand data
 
 ```go
@@ -305,6 +339,11 @@ hf, err := hydrafetch.New("hf_...",
 | `SubmitBatch(ctx, urls, opts)` | `*BatchAccepted` (`BatchID`, `Status`, `InvalidUrls`) | 1 per page |
 | `CrawlStatus(ctx, id)`, `BatchStatus(ctx, id)` | `*Job` | free |
 | `CancelCrawl(ctx, id)`, `CancelBatch(ctx, id)` | `*Job` | free, pages not yet read are not charged |
+| `CreateMonitor(ctx, input)`, `UpdateMonitor(ctx, id, changes)` | `*Monitor` | free; checks are charged as they run |
+| `ListMonitors(ctx, page)`, `GetMonitor(ctx, id)` | `[]Monitor`, `*Monitor` | free |
+| `RunMonitor(ctx, id)` | `*MonitorCheckSummary` | as a scheduled check |
+| `ListMonitorChecks(ctx, id, page)`, `GetMonitorCheck(ctx, id, checkID)` | `[]MonitorCheckSummary`, `*MonitorCheck` | free |
+| `DeleteMonitor(ctx, id)` | `error` | free |
 | `RateResult(ctx, in)` | `*RateResultResponse` | free |
 
 Failed requests are not billed. Pricing does not vary with page difficulty, so there is no render, stealth or proxy option to set.

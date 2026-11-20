@@ -222,3 +222,93 @@ type CompanyHiringChanges = JobsIndexCompanyChangesDto
 type NewsArticle = NewsResultItemDto
 
 type NewsResult = NewsResultDto
+
+type MonitorTarget struct {
+	ID             string         `json:"id,omitempty"`
+	Type           string         `json:"type"`
+	URLs           []string       `json:"urls,omitempty"`
+	Selector       []string       `json:"selector,omitempty"`
+	Ignore         []string       `json:"ignore,omitempty"`
+	TriggerOn      []string       `json:"triggerOn,omitempty"`
+	ScrapeOptions  *ScrapeOptions `json:"scrapeOptions,omitempty"`
+	URL            string         `json:"url,omitempty"`
+	IncludePaths   []string       `json:"includePaths,omitempty"`
+	ExcludePaths   []string       `json:"excludePaths,omitempty"`
+	ReadNewPages   *bool          `json:"readNewPages,omitempty"`
+	Query          string         `json:"query,omitempty"`
+	TimeRange      string         `json:"timeRange,omitempty"`
+	Country        string         `json:"country,omitempty"`
+	IncludeDomains []string       `json:"includeDomains,omitempty"`
+	ExcludeDomains []string       `json:"excludeDomains,omitempty"`
+	Limit          *int           `json:"limit,omitempty"`
+	Goal           string         `json:"goal,omitempty"`
+}
+
+type MonitorSchedule = MonitorScheduleDto
+
+type MonitorWebhook = MonitorWebhookDto
+
+type MonitorInput struct {
+	Name          string          `json:"name"`
+	Schedule      MonitorSchedule `json:"schedule"`
+	Targets       []MonitorTarget `json:"targets"`
+	Webhook       *MonitorWebhook `json:"webhook,omitempty"`
+	RetentionDays *int            `json:"retentionDays,omitempty"`
+	Email         string          `json:"email,omitempty"`
+}
+
+type MonitorChanges struct {
+	Name          string           `json:"name,omitempty"`
+	Schedule      *MonitorSchedule `json:"schedule,omitempty"`
+	Targets       []MonitorTarget  `json:"targets,omitempty"`
+	Webhook       *MonitorWebhook  `json:"webhook,omitempty"`
+	RetentionDays *int             `json:"retentionDays,omitempty"`
+	Email         string           `json:"email,omitempty"`
+	Status        string           `json:"status,omitempty"`
+}
+
+type MonitorCheckSummary = MonitorCheckSummaryDto
+
+type MonitorJudge = MonitorJudgeDto
+
+type MonitorFieldChange = MonitorFieldChangeDto
+
+type Monitor struct {
+	ID            string                     `json:"id"`
+	Name          string                     `json:"name"`
+	Status        string                     `json:"status"`
+	PausedReason  *string                    `json:"pausedReason"`
+	Schedule      MonitorScheduleResponseDto `json:"schedule"`
+	Targets       []MonitorTarget            `json:"targets"`
+	Webhook       *MonitorWebhookResponseDto `json:"webhook"`
+	RetentionDays int                        `json:"retentionDays"`
+	Email         string                     `json:"email"`
+	NextRunAt     *string                    `json:"nextRunAt"`
+	LastRunAt     *string                    `json:"lastRunAt"`
+	LastCheck     *MonitorCheckSummary       `json:"lastCheck"`
+	CreatedAt     string                     `json:"createdAt"`
+}
+
+type MonitorChange struct {
+	URL          string               `json:"url"`
+	TargetID     string               `json:"targetId"`
+	Status       string               `json:"status"`
+	Title        *string              `json:"title"`
+	Excerpt      *string              `json:"excerpt"`
+	Judge        *MonitorJudge        `json:"judge"`
+	Diff         *string              `json:"diff"`
+	FieldChanges []MonitorFieldChange `json:"fieldChanges"`
+	Error        *string              `json:"error"`
+	DetectedAt   string               `json:"detectedAt"`
+}
+
+type MonitorCheck struct {
+	MonitorCheckSummary
+	MonitorID string          `json:"monitorId"`
+	Changes   []MonitorChange `json:"changes"`
+}
+
+type MonitorPage struct {
+	Limit  int
+	Offset int
+}
