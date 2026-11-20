@@ -303,6 +303,7 @@ hf, err := hydrafetch.New("hf_...",
 | `Batch(ctx, urls, *BatchOptions, *WaitOptions)` | `*Job` | 1 per page |
 | `StartCrawl`, `StartBatch` | `string` | 1 per page |
 | `CrawlStatus(ctx, id)`, `BatchStatus(ctx, id)` | `*Job` | free |
+| `CancelCrawl(ctx, id)`, `CancelBatch(ctx, id)` | `*Job` | free, pages not yet read are not charged |
 | `RateResult(ctx, in)` | `*RateResultResponse` | free |
 
 Failed requests are not billed. Pricing does not vary with page difficulty, so there is no render, stealth or proxy option to set.

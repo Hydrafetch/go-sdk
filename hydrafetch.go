@@ -570,9 +570,21 @@ func (c *Client) BatchStatus(ctx context.Context, id string) (*Job, error) {
 	return c.jobStatus(ctx, "/v1/web/batch/"+url.PathEscape(id))
 }
 
+func (c *Client) CancelCrawl(ctx context.Context, id string) (*Job, error) {
+	return c.jobCall(ctx, http.MethodDelete, "/v1/web/crawl/"+url.PathEscape(id))
+}
+
+func (c *Client) CancelBatch(ctx context.Context, id string) (*Job, error) {
+	return c.jobCall(ctx, http.MethodDelete, "/v1/web/batch/"+url.PathEscape(id))
+}
+
 func (c *Client) jobStatus(ctx context.Context, path string) (*Job, error) {
+	return c.jobCall(ctx, http.MethodGet, path)
+}
+
+func (c *Client) jobCall(ctx context.Context, method, path string) (*Job, error) {
 	var out Job
-	if err := c.do(ctx, http.MethodGet, path, nil, nil, &out); err != nil {
+	if err := c.do(ctx, method, path, nil, nil, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

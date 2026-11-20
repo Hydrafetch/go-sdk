@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -273,6 +274,29 @@ func TestRetriesServerErrors(t *testing.T) {
 	}
 	if page.Markdown == nil || *page.Markdown != "ok" || calls != 3 {
 		t.Errorf("markdown=%v calls=%d", page.Markdown, calls)
+	}
+}
+
+func TestCancelSendsDeleteOnTheJobID(t *testing.T) {
+	c, cap := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, `{"success":true,"data":{"status":"cancelled"}}`)
+	})
+	crawl, err := c.CancelCrawl(context.Background(), "c 1")
+	if err != nil {
+		t.Fatalf("CancelCrawl: %v", err)
+	}
+	batch, err := c.CancelBatch(context.Background(), "b_1")
+	if err != nil {
+		t.Fatalf("CancelBatch: %v", err)
+	}
+	got := []string{
+		cap.requests[0].Method + " " + cap.requests[0].URL.EscapedPath(),
+		cap.requests[1].Method + " " + cap.requests[1].URL.EscapedPath(),
+		string(crawl.Status), string(batch.Status),
+	}
+	want := []string{"DELETE /v1/web/crawl/c%201", "DELETE /v1/web/batch/b_1", "cancelled", "cancelled"}
+	if strings.Join(got, "|") != strings.Join(want, "|") {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
 

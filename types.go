@@ -29,6 +29,8 @@ type ScrapeOptions struct {
 	Render             bool              `json:"render,omitempty"`
 	IncludeLinks       *bool             `json:"includeLinks,omitempty"`
 	WaitFor            int               `json:"waitFor,omitempty"`
+	WaitForSelector    string            `json:"waitForSelector,omitempty"`
+	Mobile             bool              `json:"mobile,omitempty"`
 	Timeout            int               `json:"timeout,omitempty"`
 	Location           *Location         `json:"location,omitempty"`
 	Headers            map[string]string `json:"headers,omitempty"`
@@ -79,6 +81,7 @@ type CrawlOptions struct {
 	MaxDepth              int            `json:"maxDepth,omitempty"`
 	IncludePaths          []string       `json:"includePaths,omitempty"`
 	ExcludePaths          []string       `json:"excludePaths,omitempty"`
+	CrawlEntireDomain     bool           `json:"crawlEntireDomain,omitempty"`
 	AllowSubdomains       bool           `json:"allowSubdomains,omitempty"`
 	AllowExternalLinks    bool           `json:"allowExternalLinks,omitempty"`
 	IgnoreQueryParameters bool           `json:"ignoreQueryParameters,omitempty"`
