@@ -537,6 +537,14 @@ func (c *Client) StartCrawl(ctx context.Context, rawURL string, opts *CrawlOptio
 }
 
 func (c *Client) StartBatch(ctx context.Context, urls []string, opts *BatchOptions) (string, error) {
+	accepted, err := c.SubmitBatch(ctx, urls, opts)
+	if err != nil {
+		return "", err
+	}
+	return accepted.BatchID, nil
+}
+
+func (c *Client) SubmitBatch(ctx context.Context, urls []string, opts *BatchOptions) (*BatchAccepted, error) {
 	body := map[string]any{"urls": urls}
 	if opts != nil {
 		encoded, _ := json.Marshal(opts)
@@ -546,7 +554,20 @@ func (c *Client) StartBatch(ctx context.Context, urls []string, opts *BatchOptio
 			body[k] = v
 		}
 	}
-	return c.startJob(ctx, "/v1/web/batch", body, "batchId")
+	var out struct {
+		BatchAccepted
+		ID string `json:"id"`
+	}
+	if err := c.do(ctx, http.MethodPost, "/v1/web/batch", body, nil, &out); err != nil {
+		return nil, err
+	}
+	if out.BatchID == "" {
+		out.BatchID = out.ID
+	}
+	if out.BatchID == "" {
+		return nil, &Error{Code: "NO_JOB_ID", Status: 502, Message: "job accepted but returned no id"}
+	}
+	return &out.BatchAccepted, nil
 }
 
 func (c *Client) startJob(ctx context.Context, path string, body map[string]any, idKey string) (string, error) {

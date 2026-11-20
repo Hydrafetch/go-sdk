@@ -300,6 +300,19 @@ func TestCancelSendsDeleteOnTheJobID(t *testing.T) {
 	}
 }
 
+func TestSubmitBatchSaysWhichURLsWereSkipped(t *testing.T) {
+	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 201, `{"batchId":"b_1","status":"queued","invalidUrls":["htps//a"]}`)
+	})
+	accepted, err := c.SubmitBatch(context.Background(), []string{"https://a.example", "htps//a"}, nil)
+	if err != nil {
+		t.Fatalf("SubmitBatch: %v", err)
+	}
+	if accepted.BatchID != "b_1" || accepted.InvalidUrls == nil || strings.Join(*accepted.InvalidUrls, ",") != "htps//a" {
+		t.Errorf("got %+v", accepted)
+	}
+}
+
 func TestBatchIDComesFromTopLevel(t *testing.T) {
 	c, _ := newServer(t, func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 201, `{"batchId":"b_1","status":"pending"}`)

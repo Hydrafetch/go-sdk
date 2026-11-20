@@ -178,6 +178,8 @@ type JobPage = CrawlPageResultDto
 
 type Job = CrawlStatusResponseDto
 
+type BatchAccepted = BatchAcceptedDto
+
 func (j *CrawlStatusResponseDto) Done() bool {
 	switch string(j.Status) {
 	case "completed", "failed", "cancelled":
